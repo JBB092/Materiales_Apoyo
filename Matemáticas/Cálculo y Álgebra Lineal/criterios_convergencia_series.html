@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criterios de Convergencia de Series</title>
+<style>
+  :root{
+    --bg:#f6f5f2;
+    --card:#ffffff;
+    --ink:#1f2430;
+    --sub:#6b7280;
+    --line:#e7e5e0;
+    --accent:#2563eb;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:40px 24px 60px;}
+
+  header{text-align:center;margin-bottom:34px;}
+  .kicker{
+    display:inline-block;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    background:#eef2ff;
+    padding:5px 14px;
+    border-radius:999px;
+    font-weight:700;
+    margin-bottom:16px;
+  }
+  h1{
+    font-size:32px;
+    margin:0 0 10px;
+    letter-spacing:-0.02em;
+    font-weight:800;
+  }
+  .goal{
+    max-width:600px;
+    margin:0 auto;
+    color:var(--sub);
+    font-size:15.5px;
+    line-height:1.55;
+  }
+  .goal b{color:var(--ink);}
+
+  .flow-note{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:26px 0 8px;
+    font-size:13px;
+    color:var(--sub);
+  }
+  .flow-note .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .flow-line{
+    height:1px;
+    background:linear-gradient(to right, transparent, var(--line), transparent);
+    margin:0 0 26px;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 24px 20px;
+    margin-bottom:18px;
+    position:relative;
+    box-shadow:0 1px 2px rgba(20,20,20,.03);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    left:0;top:18px;bottom:18px;
+    width:4px;
+    border-radius:4px;
+    background:var(--accent-c);
+  }
+  .card-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+    padding-left:8px;
+  }
+  .num{
+    width:30px;height:30px;
+    border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;
+    font-size:14px;
+    color:#fff;
+    background:var(--accent-c);
+    flex-shrink:0;
+  }
+  .card-head h2{
+    font-size:18.5px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .form-tag{
+    margin-left:auto;
+    font-size:13px;
+    color:var(--accent-c);
+    background:var(--accent-bg);
+    padding:5px 12px;
+    border-radius:8px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 20px;
+    padding-left:8px;
+  }
+  .field{font-size:13.5px;line-height:1.5;}
+  .field .lbl{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--sub);
+    font-weight:700;
+    margin-bottom:3px;
+  }
+  .field.full{grid-column:1/-1;}
+
+  .tip{
+    margin:14px 8px 0;
+    background:var(--accent-bg);
+    border-radius:12px;
+    padding:11px 14px;
+    font-size:13.5px;
+    line-height:1.5;
+    display:flex;
+    gap:10px;
+  }
+  .tip .pin{font-size:15px;line-height:1.4;}
+  .tip b{color:var(--accent-c);}
+
+  .chain{
+    margin:14px 8px 0;
+    font-size:13px;
+    background:#fafafa;
+    border:1px dashed var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    line-height:1.7;
+    overflow-x:auto;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:34px;
+    padding-top:22px;
+    border-top:1px solid var(--line);
+    color:var(--sub);
+    font-size:12.5px;
+    line-height:1.7;
+  }
+  footer .credit{
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  @media (max-width:640px){
+    h1{font-size:26px;}
+    .grid2{grid-template-columns:1fr;}
+    .card{padding:18px 16px 16px;}
+    .form-tag{margin-left:0;}
+    .card-head{flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">Cálculo · Álgebra Lineal</span>
+    <h1>Criterios de Convergencia de Series</h1>
+    <p class="goal">
+      El objetivo no es memorizar fórmulas sueltas, sino <b>reconocer el patrón</b> de cada criterio
+      con solo mirar la forma del término general — así, al ver un ejercicio, sabrás casi de inmediato
+      cuál camino tomar.
+    </p>
+  </header>
+
+  <div class="flow-note"><span class="dot"></span> Recorre los criterios en este orden mientras analizas el término <b>a<sub>n</sub></b> <span class="dot"></span></div>
+  <div class="flow-line"></div>
+
+  <!-- 1. GEOMÉTRICA -->
+  <div class="card" style="--accent-c:#2563eb; --accent-bg:#eff4ff;">
+    <div class="card-head">
+      <div class="num">1</div>
+      <h2>Serie Geométrica</h2>
+      <span class="form-tag">Σ a·r<sup>n</sup></span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Converge si</span>|r| &lt; 1</div>
+      <div class="field"><span class="lbl">Diverge si</span>|r| ≥ 1</div>
+      <div class="field full"><span class="lbl">Converge a</span>a / (1 − r) &nbsp;(a = primer término)</div>
+      <div class="field full"><span class="lbl">Se usa cuando</span>el término general es <b>solo</b> una constante elevada a n o k — no hay sumas, restas ni polinomios mezclados (ej. 3<sup>n</sup>, (1/2)<sup>n</sup>, 5·(2/3)<sup>n</sup>).</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Identifica la base <b>r</b> y compárala con 1. Si el término es "número puro elevado a n", casi siempre es geométrica.</div></div>
+  </div>
+
+  <!-- 2. TELESCÓPICA -->
+  <div class="card" style="--accent-c:#0d9488; --accent-bg:#effaf8;">
+    <div class="card-head">
+      <div class="num">2</div>
+      <h2>Serie Telescópica</h2>
+      <span class="form-tag">Σ (b<sub>n</sub> − b<sub>n+1</sub>)</span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Converge si</span>lim b<sub>n</sub> existe (los términos se cancelan en cadena)</div>
+      <div class="field"><span class="lbl">Diverge si</span>lim b<sub>n</sub> no existe o es infinito</div>
+      <div class="field full"><span class="lbl">Converge a</span>b<sub>1</sub> − lim<sub>n→∞</sub> b<sub>n</sub></div>
+      <div class="field full"><span class="lbl">Se usa cuando</span>hay una fracción que se puede separar y quedan dos términos consecutivos que se van cancelando.</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Casi siempre se resuelve con <b>fracciones parciales</b>. Busca sacar factor común para que aparezcan términos con <b>n</b> y <b>n+1</b> y verificar la cancelación.</div></div>
+  </div>
+
+  <!-- 3. INTEGRAL -->
+  <div class="card" style="--accent-c:#7c3aed; --accent-bg:#f5f0ff;">
+    <div class="card-head">
+      <div class="num">3</div>
+      <h2>Criterio de la Integral</h2>
+      <span class="form-tag">∫<sub>N</sub><sup>∞</sup> f(x) dx</span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Condición previa</span>f(x) positiva, continua y decreciente para x ≥ N</div>
+      <div class="field"><span class="lbl">Converge / Diverge</span>según lo haga la integral impropia asociada</div>
+      <div class="field full"><span class="lbl">Resultado</span>solo indica convergencia/divergencia, <b>no</b> da el valor exacto de la suma.</div>
+      <div class="field full"><span class="lbl">Se usa cuando</span>aparece un <b>exponente</b> o un <b>logaritmo</b> en el término (ej. n·ln n, n·e<sup>n</sup>, 1/(n·ln²n)).</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Cuando veas un logaritmo o exponente, casi siempre hay un <b>cambio de variable</b> (u = ln n, etc.) que deja una integral directa.</div></div>
+  </div>
+
+  <!-- 4. COMPARACIÓN DIRECTA -->
+  <div class="card" style="--accent-c:#c2410c; --accent-bg:#fff3ec;">
+    <div class="card-head">
+      <div class="num">4</div>
+      <h2>Comparación Directa</h2>
+      <span class="form-tag">0 ≤ a<sub>n</sub> ≤ b<sub>n</sub></span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Converge si</span>Σb<sub>n</sub> converge y 0 ≤ a<sub>n</sub> ≤ b<sub>n</sub></div>
+      <div class="field"><span class="lbl">Diverge si</span>Σb<sub>n</sub> diverge y a<sub>n</sub> ≥ b<sub>n</sub> ≥ 0</div>
+      <div class="field full"><span class="lbl">Se compara contra</span>una p-serie (1/n<sup>p</sup>) o una geométrica conocida.</div>
+      <div class="field full"><span class="lbl">Con funciones trig.</span><b>sen, cos, sen², cos²</b> → acotados entre −1 y 1 (o 0 y 1), se pueden acotar fácilmente para comparar. <b>tan</b> no está acotada (tiene asíntotas) — úsala con cuidado, casi nunca sirve para acotar directo.</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Busca una cota simple más grande o más chica que sea una p-serie o geométrica. Si ves sen/cos en el numerador, acótalos por 1 y compara el resto.</div></div>
+  </div>
+
+  <!-- 5. RAÍZ -->
+  <div class="card" style="--accent-c:#0891b2; --accent-bg:#eafaff;">
+    <div class="card-head">
+      <div class="num">5</div>
+      <h2>Criterio de la Raíz</h2>
+      <span class="form-tag">L = lim ⁿ√|a<sub>n</sub>|</span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Converge si</span>L &lt; 1</div>
+      <div class="field"><span class="lbl">Diverge si</span>L &gt; 1</div>
+      <div class="field full"><span class="lbl">No concluyente si</span>L = 1 (probar otro criterio)</div>
+      <div class="field full"><span class="lbl">Se usa cuando</span><b>todo el término</b> está elevado a la n (ej. (2n/(3n+1))<sup>n</sup>).</div>
+    </div>
+    <div class="chain">Resultado directo útil: un <b>polinomio elevado a 1/n</b> (raíz n-ésima de un polinomio) tiende a <b>1</b> cuando n→∞. Ej: (n² + 3n)<sup>1/n</sup> → 1</div>
+    <div class="tip"><span class="pin">💡</span><div>Si ves exponente <b>n</b> en toda la expresión, la raíz n-ésima cancela ese exponente y simplifica directo.</div></div>
+  </div>
+
+  <!-- 6. RAZÓN -->
+  <div class="card" style="--accent-c:#be123c; --accent-bg:#fff0f3;">
+    <div class="card-head">
+      <div class="num">6</div>
+      <h2>Criterio de la Razón</h2>
+      <span class="form-tag">L = lim |a<sub>n+1</sub>/a<sub>n</sub>|</span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Converge si</span>L &lt; 1</div>
+      <div class="field"><span class="lbl">Diverge si</span>L &gt; 1</div>
+      <div class="field full"><span class="lbl">No concluyente si</span>L = 1 (probar otro criterio)</div>
+      <div class="field full"><span class="lbl">Se usa cuando</span>hay <b>factoriales</b>, <b>productos</b> de términos, o exponentes con <b>base numérica</b> (n!, n<sup>n</sup>, c<sup>n</sup>).</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Es la mejor opción cuando hay factoriales, ya que a<sub>n+1</sub>/a<sub>n</sub> cancela la mayoría de sus términos.</div></div>
+  </div>
+
+  <!-- 7. ALTERNADAS -->
+  <div class="card" style="--accent-c:#4338ca; --accent-bg:#f1f0ff;">
+    <div class="card-head">
+      <div class="num">7</div>
+      <h2>Series Alternadas (Leibniz)</h2>
+      <span class="form-tag">Σ (−1)<sup>n</sup>b<sub>n</sub></span>
+    </div>
+    <div class="grid2">
+      <div class="field"><span class="lbl">Converge si</span>b<sub>n</sub> &gt; 0, decreciente y lim b<sub>n</sub> = 0</div>
+      <div class="field"><span class="lbl">No concluyente</span>si falla alguna condición, no se puede afirmar divergencia solo por eso</div>
+      <div class="field full"><span class="lbl">Resultado</span>solo indica convergencia (posiblemente condicional); no da el valor de la suma.</div>
+      <div class="field full"><span class="lbl">Se usa cuando</span>aparece un <b>(−1)<sup>n</sup></b> o (−1)<sup>n+1</sup> y el término <b>no</b> encaja como raíz o razón.</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Si ya descartaste raíz y razón y ves un (−1)<sup>n</sup>, esta suele ser la respuesta. Solo confirma que b<sub>n</sub> decrece hacia 0.</div></div>
+  </div>
+
+  <div class="flow-note" style="margin-top:30px;"><span class="dot"></span> Últimos dos: se usan como respaldo o descarte rápido <span class="dot"></span></div>
+  <div class="flow-line"></div>
+
+  <!-- 8. COMPARACIÓN EN EL LÍMITE -->
+  <div class="card" style="--accent-c:#166534; --accent-bg:#f0fbf3;">
+    <div class="card-head">
+      <div class="num">8</div>
+      <h2>Comparación en el Límite</h2>
+      <span class="form-tag">L = lim (a<sub>n</sub>/b<sub>n</sub>)</span>
+    </div>
+    <div class="grid2">
+      <div class="field full"><span class="lbl">Si 0 &lt; L &lt; ∞</span>Σa<sub>n</sub> y Σb<sub>n</sub> tienen el <b>mismo comportamiento</b> (convergen o divergen juntas)</div>
+      <div class="field full"><span class="lbl">Se usa cuando</span>el término tiene sumas o restas de potencias y quieres quedarte solo con la parte que "manda" el crecimiento.</div>
+    </div>
+    <div class="chain">Cadena de dominancia (de menor a mayor crecimiento):<br>
+      ln n &nbsp;≪&nbsp; n<sup>a</sup> &nbsp;≪&nbsp; n<sup>a</sup>·ln n &nbsp;≪&nbsp; n<sup>b</sup> (b&gt;a) &nbsp;≪&nbsp; c<sup>n</sup> (c&gt;1) &nbsp;≪&nbsp; n! &nbsp;≪&nbsp; n<sup>n</sup><br>
+      Ejemplo: 2<sup>n</sup> ≪ n<sup>n</sup>, así que para n grande, n<sup>n</sup> domina.
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Elige b<sub>n</sub> como el término dominante (mayor grado o crecimiento) del numerador y denominador, simplifica, y compara.</div></div>
+  </div>
+
+  <!-- 9. DIVERGENCIA -->
+  <div class="card" style="--accent-c:#b91c1c; --accent-bg:#fef1f1;">
+    <div class="card-head">
+      <div class="num">9</div>
+      <h2>Criterio de Divergencia</h2>
+      <span class="form-tag">lim a<sub>n</sub> ≠ 0</span>
+    </div>
+    <div class="grid2">
+      <div class="field full"><span class="lbl">Diverge si</span>lim<sub>n→∞</sub> a<sub>n</sub> ≠ 0 (o el límite no existe)</div>
+      <div class="field full"><span class="lbl">⚠️ Cuidado</span>si lim a<sub>n</sub> = 0, <b>no se puede concluir nada</b> — la contrapositiva es falsa: que el término tienda a 0 <b>no</b> garantiza convergencia (ej. la serie armónica 1/n).</div>
+      <div class="field full"><span class="lbl">Se usa</span>como chequeo rápido inicial o final: si el límite del término no es 0, diverge sin más trabajo.</div>
+    </div>
+    <div class="tip"><span class="pin">💡</span><div>Úsalo para descartar rápido. Si el límite da 0, sigue con otro criterio de la lista — este por sí solo no resuelve nada.</div></div>
+  </div>
+
+  <footer>
+    Guía de estudio · Cálculo / Álgebra Lineal — Criterios de convergencia de series<br>
+    <span class="credit">Generado por Claude Sonnet 5</span> · Supervisado por Jose Barquero
+  </footer>
+
+</div>
+</body>
+</html>
