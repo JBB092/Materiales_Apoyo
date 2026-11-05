@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integrales · Repaso</title>
+<style>
+:root{
+  --bg:#f6f6fa;--card:#ffffff;--ink:#1c1d2b;--muted:#5e6178;--line:#e5e6ef;
+  --acc:#4f46e5;--acc-soft:#eef0ff;--acc-ink:#3730a3;
+  --teal:#0d9488;--teal-soft:#e3f6f3;
+  --neg:#e11d48;--neg-soft:#ffe6ec;
+  --amber:#b45309;--amber-soft:#fff4e0;
+  --ok:#15803d;--ok-soft:#e5f6ea;
+  --code:#f2f3f9;--shadow:0 1px 2px rgba(20,20,40,.04),0 6px 24px rgba(20,20,40,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111219;--card:#1a1b25;--ink:#ecedf5;--muted:#a3a6bd;--line:#2b2d3c;
+    --acc:#8b85ff;--acc-soft:#25264a;--acc-ink:#c7c4ff;
+    --teal:#2dd4bf;--teal-soft:#13302d;
+    --neg:#fb7185;--neg-soft:#3a1a24;
+    --amber:#fbbf24;--amber-soft:#33280f;
+    --ok:#4ade80;--ok-soft:#14301e;
+    --code:#22243a;--shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111219;--card:#1a1b25;--ink:#ecedf5;--muted:#a3a6bd;--line:#2b2d3c;
+  --acc:#8b85ff;--acc-soft:#25264a;--acc-ink:#c7c4ff;
+  --teal:#2dd4bf;--teal-soft:#13302d;
+  --neg:#fb7185;--neg-soft:#3a1a24;
+  --amber:#fbbf24;--amber-soft:#33280f;
+  --ok:#4ade80;--ok-soft:#14301e;
+  --code:#22243a;--shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}
+/* ---------- barra superior ---------- */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 85%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:880px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:700;letter-spacing:-.01em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand span{color:var(--acc);font-family:Georgia,serif;font-size:1.25em;margin-right:4px}
+.btn-ic{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;
+  height:38px;padding:0 12px;font:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-ic:hover{border-color:var(--acc)}
+.progress{height:3px;background:var(--acc);width:0;transition:width .1s}
+/* índice */
+.toc-panel{position:fixed;inset:0;z-index:30;display:none}
+.toc-panel.open{display:block}
+.toc-bg{position:absolute;inset:0;background:rgba(10,10,20,.4)}
+.toc-box{position:absolute;right:12px;top:60px;width:min(340px,calc(100% - 24px));max-height:calc(100% - 80px);overflow:auto;
+  background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.toc-box a{display:flex;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:15px}
+.toc-box a:hover{background:var(--acc-soft)}
+.toc-box a b{color:var(--acc);min-width:22px}
+/* ---------- layout ---------- */
+main{max-width:880px;margin:0 auto;padding:0 16px 40px}
+.hero{padding:48px 0 24px}
+.hero .tag{display:inline-block;font-size:13px;font-weight:600;color:var(--acc-ink);background:var(--acc-soft);padding:4px 10px;border-radius:99px}
+.hero h1{font-size:clamp(30px,6vw,46px);line-height:1.1;letter-spacing:-.02em;margin:14px 0 12px}
+.hero p{color:var(--muted);font-size:18px;max-width:640px;margin:0}
+.route{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.route span{font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:99px;background:var(--card);color:var(--muted)}
+.route span.arrow{border:none;background:none;padding:6px 0}
+section.sec{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px clamp(18px,4vw,36px);margin:22px 0;box-shadow:var(--shadow)}
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--acc-soft);color:var(--acc-ink);display:grid;place-items:center;font-weight:700;font-size:15px}
+h2{font-size:clamp(22px,4vw,28px);letter-spacing:-.015em;margin:0;line-height:1.2}
+h3{font-size:19px;margin:28px 0 8px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:6px 0 18px}
+p{margin:10px 0}
+ul,ol{padding-left:22px}
+li{margin:4px 0}
+/* cajas */
+.box{border-radius:14px;padding:14px 16px;margin:16px 0;border:1px solid transparent}
+.box .t{font-weight:700;font-size:14px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.analogy{background:var(--teal-soft)}
+.analogy .t{color:var(--teal)}
+.key{background:var(--acc-soft)}
+.key .t{color:var(--acc-ink)}
+.warn{background:var(--amber-soft)}
+.warn .t{color:var(--amber)}
+.good{background:var(--ok-soft)}
+.good .t{color:var(--ok)}
+/* matemáticas */
+.m{font-family:"Cambria Math","STIX Two Math","Latin Modern Math",Georgia,"Times New Roman",serif;white-space:nowrap}
+.eq{display:block;text-align:center;font-family:"Cambria Math","STIX Two Math","Latin Modern Math",Georgia,"Times New Roman",serif;
+  font-size:1.15em;padding:14px 10px;margin:12px 0;background:var(--code);border-radius:12px;overflow-x:auto;white-space:nowrap;line-height:2.1}
+.eq.big{font-size:1.35em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.25;margin:0 .1em}
+.fr>span:first-child{border-bottom:1.3px solid currentColor;padding:0 .2em .05em}
+.fr>span:last-child{padding:.05em .2em 0}
+.int{display:inline-grid;grid-template-columns:auto auto;grid-template-rows:1fr 1fr;vertical-align:middle;line-height:1;margin-right:.12em}
+.int .s{grid-row:1/3;grid-column:1;font-size:2em;font-style:normal;line-height:1}
+.int .up{grid-row:1;grid-column:2;font-size:.68em;align-self:start;font-style:normal;margin-left:-.05em}
+.int .lo{grid-row:2;grid-column:2;font-size:.68em;align-self:end;font-style:normal;margin-left:-.45em}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 .15em}
+.sum .s{font-size:1.6em;font-style:normal;line-height:1.05}
+.sum i{font-style:normal;font-size:.65em}
+.ev{white-space:nowrap}
+.lims{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.65em;line-height:1.5;margin-left:.1em}
+.hl{color:var(--acc);font-weight:600}
+.hl2{color:var(--teal);font-weight:600}
+.hln{color:var(--neg);font-weight:600}
+sup{font-size:.7em;line-height:0}
+/* pasos */
+.steps{list-style:none;padding:0;margin:14px 0;counter-reset:st}
+.steps>li{counter-increment:st;position:relative;padding:12px 14px 12px 50px;border:1px solid var(--line);border-radius:14px;margin:10px 0}
+.steps>li::before{content:counter(st);position:absolute;left:14px;top:12px;width:24px;height:24px;border-radius:8px;background:var(--acc);color:#fff;
+  font-size:13px;font-weight:700;display:grid;place-items:center}
+.steps .eq{margin:8px 0 2px;font-size:1.05em;text-align:left;padding:10px 12px}
+/* acordeones */
+details{border:1px solid var(--line);border-radius:14px;margin:10px 0;background:var(--card)}
+summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;color:var(--acc);font-weight:400;line-height:1;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details>.in{padding:0 16px 14px}
+details.sol{background:var(--code);border-color:transparent}
+details.sol summary{font-size:15px;color:var(--acc-ink)}
+/* tablas */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);background:var(--code)}
+tr:last-child td{border-bottom:none}
+td .m{font-size:1.08em}
+/* tarjetas grid */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:14px 0}
+.mini{border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mini h4{margin:0 0 6px;font-size:16px}
+.mini p{margin:4px 0;font-size:15px;color:var(--muted)}
+/* simulador */
+.sim{border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:16px 0}
+.sim canvas{display:block;width:100%;background:var(--card);touch-action:pan-y}
+.sim-ctrl{padding:16px;border-top:1px solid var(--line);display:grid;gap:14px;background:var(--code)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lbl{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;min-width:92px}
+select{font:inherit;font-size:15px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);flex:1;min-width:180px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;flex-wrap:wrap}
+.seg button{border:none;background:none;font:inherit;font-size:14px;padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--acc);color:#fff}
+input[type=range]{flex:1;min-width:140px;accent-color:var(--acc);height:28px}
+.val{font-variant-numeric:tabular-nums;font-weight:700;min-width:48px;text-align:right}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat small{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.stat b{font-size:20px;font-variant-numeric:tabular-nums}
+.play{border:none;background:var(--acc);color:#fff;font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border-radius:10px;cursor:pointer}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
+.chk input{accent-color:var(--acc);width:17px;height:17px}
+/* quiz */
+.q{border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.q .qt{font-weight:600;margin-bottom:10px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:16px;padding:10px 14px;border-radius:10px;cursor:pointer}
+.opt:hover{border-color:var(--acc)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--neg-soft);border-color:var(--neg)}
+.fb{margin-top:10px;font-size:15px;display:none;padding:10px 12px;border-radius:10px;background:var(--code)}
+.fb.show{display:block}
+.score{font-weight:700;color:var(--acc)}
+/* resumen */
+.flow{display:grid;gap:10px;margin:14px 0}
+.flow div{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:14px}
+.flow b{flex:none;color:var(--acc);font-size:15px;min-width:20px}
+footer{max-width:880px;margin:0 auto;padding:10px 16px 40px;text-align:center;color:var(--muted);font-size:13px}
+footer .sep{opacity:.5;margin:0 6px}
+.muted{color:var(--muted)}
+@media (max-width:560px){
+  body{font-size:16px}
+  .hero{padding:32px 0 12px}
+  .steps>li{padding:12px 12px 12px 44px}
+  .steps>li::before{left:11px}
+  .lbl{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span>∫</span>Integrales · Repaso</div>
+    <button class="btn-ic" id="tocBtn" aria-label="Abrir índice">☰ Índice</button>
+    <button class="btn-ic" id="themeBtn" aria-label="Cambiar tema">◐</button>
+  </div>
+  <div class="progress" id="prog"></div>
+</header>
+
+<div class="toc-panel" id="toc">
+  <div class="toc-bg" id="tocBg"></div>
+  <nav class="toc-box">
+    <a href="#previos"><b>0</b>Conocimientos previos</a>
+    <a href="#problema"><b>1</b>La gran pregunta: el área bajo una curva</a>
+    <a href="#rectangulos"><b>2</b>La idea genial: usar rectángulos</a>
+    <a href="#simulador"><b>3</b>Simulador interactivo</a>
+    <a href="#riemann"><b>4</b>Sumas de Riemann</a>
+    <a href="#integral"><b>5</b>Nace la integral definida</a>
+    <a href="#tfc"><b>6</b>El atajo: Teorema Fundamental</a>
+    <a href="#propiedades"><b>7</b>Propiedades de las integrales</a>
+    <a href="#directas"><b>8</b>Integrales directas</a>
+    <a href="#practica"><b>9</b>Practica y autoevaluación</a>
+    <a href="#resumen"><b>★</b>Resumen en una mirada</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <span class="tag">Cálculo Diferencial e Integral</span>
+  <h1>¿De dónde sale la integral?</h1>
+  <p>Una guía de repaso, paso a paso y sin prisa, para entender qué es una integral, por qué existe y cómo se calculan las más directas.</p>
+  <div class="route">
+    <span>Área bajo una curva</span><span class="arrow">→</span>
+    <span>Rectángulos</span><span class="arrow">→</span>
+    <span>Sumas de Riemann</span><span class="arrow">→</span>
+    <span>Límite</span><span class="arrow">→</span>
+    <span>Integral</span><span class="arrow">→</span>
+    <span>Reglas directas</span>
+  </div>
+</div>
+
+<!-- ================= 0. PREVIOS ================= -->
+<section class="sec" id="previos">
+  <div class="sec-head"><div class="num">0</div><h2>Conocimientos previos</h2></div>
+  <p class="lead">Antes de empezar, aquí están las herramientas que vas a usar. Abre solo las que quieras repasar; si ya las dominas, puedes saltar a la sección 1.</p>
+
+  <details>
+    <summary>Funciones: evaluar y graficar</summary>
+    <div class="in">
+      <p>Una función es como una <b>máquina</b>: le metes un número <span class="m">x</span> y te devuelve otro número <span class="m">f(x)</span>.</p>
+      <p>Ejemplo con <span class="m">f(x) = x² + 1</span>. Para evaluar en <span class="m">x = 3</span>:</p>
+      <ol class="steps">
+        <li>Cambiamos cada <span class="m">x</span> por 3:<div class="eq">f(3) = 3² + 1</div></li>
+        <li>Calculamos la potencia: <span class="m">3² = 3 · 3 = 9</span><div class="eq">f(3) = 9 + 1</div></li>
+        <li>Sumamos:<div class="eq">f(3) = 10</div></li>
+      </ol>
+      <p>En la gráfica, <span class="m">f(x)</span> es la <b>altura</b> de la curva en el punto <span class="m">x</span>. Esta idea (valor de la función = altura) es clave para todo lo que sigue.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Áreas de figuras básicas</summary>
+    <div class="in">
+      <div class="grid2">
+        <div class="mini"><h4>Rectángulo</h4><p class="m">Área = base × altura</p></div>
+        <div class="mini"><h4>Triángulo</h4><p class="m">Área = <span class="fr"><span>base × altura</span><span>2</span></span></p></div>
+        <div class="mini"><h4>Trapecio</h4><p class="m">Área = <span class="fr"><span>(B + b)</span><span>2</span></span> × h</p></div>
+      </div>
+      <p>El rectángulo es el protagonista de toda esta guía: es la figura cuya área es más fácil de calcular.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Leyes de exponentes y raíces como potencias</summary>
+    <div class="in">
+      <p>Para integrar, casi siempre conviene escribir todo como <b>una potencia de x</b>. Estas son las reglas que más se usan:</p>
+      <div class="tw"><table>
+        <tr><th>Regla</th><th>Ejemplo</th></tr>
+        <tr><td class="m">xᵃ · xᵇ = xᵃ⁺ᵇ</td><td class="m">x² · x³ = x⁵</td></tr>
+        <tr><td class="m"><span class="fr"><span>xᵃ</span><span>xᵇ</span></span> = xᵃ⁻ᵇ</td><td class="m"><span class="fr"><span>x⁵</span><span>x²</span></span> = x³</td></tr>
+        <tr><td class="m"><span class="fr"><span>1</span><span>xⁿ</span></span> = x⁻ⁿ</td><td class="m"><span class="fr"><span>1</span><span>x³</span></span> = x⁻³</td></tr>
+        <tr><td class="m">√x = x<sup>1/2</sup></td><td class="m">√x = x<sup>1/2</sup></td></tr>
+        <tr><td class="m"><sup>n</sup>√x<sup>m</sup> = x<sup>m/n</sup></td><td class="m"><sup>3</sup>√x² = x<sup>2/3</sup></td></tr>
+        <tr><td class="m">x⁰ = 1</td><td class="m">5⁰ = 1</td></tr>
+      </table></div>
+      <div class="box analogy"><div class="t">💡 Analogía</div>La raíz es "la potencia fraccionaria disfrazada". El número de abajo de la fracción es el índice de la raíz y el de arriba es la potencia: <span class="m"><sup>3</sup>√x² = x<sup>2/3</sup></span>.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Factorización y productos notables</summary>
+    <div class="in">
+      <p>A veces una expresión parece difícil de integrar, pero al factorizar (o al desarrollar) se vuelve sencilla.</p>
+      <h3>Factor común</h3>
+      <div class="eq">3x² + 6x = 3x(x + 2)</div>
+      <h3>Diferencia de cuadrados</h3>
+      <div class="eq">a² − b² = (a − b)(a + b) &nbsp;&nbsp;→&nbsp;&nbsp; x² − 9 = (x − 3)(x + 3)</div>
+      <h3>Trinomio x² + bx + c</h3>
+      <p>Buscamos dos números que <b>multiplicados</b> den <span class="m">c</span> y <b>sumados</b> den <span class="m">b</span>.</p>
+      <ol class="steps">
+        <li>Para <span class="m">x² + 5x + 6</span> buscamos dos números que multiplicados den 6 y sumados den 5.</li>
+        <li>Probamos: 2 · 3 = 6 y 2 + 3 = 5. ¡Funcionan!</li>
+        <li>Escribimos:<div class="eq">x² + 5x + 6 = (x + 2)(x + 3)</div></li>
+      </ol>
+      <h3>Cuadrado de un binomio (desarrollar)</h3>
+      <div class="eq">(a + b)² = a² + 2ab + b² &nbsp;&nbsp;→&nbsp;&nbsp; (x + 1)² = x² + 2x + 1</div>
+      <h3>Suma y diferencia de cubos</h3>
+      <div class="eq">a³ − b³ = (a − b)(a² + ab + b²) &nbsp;&nbsp;&nbsp; a³ + b³ = (a + b)(a² − ab + b²)</div>
+      <div class="box warn"><div class="t">⚠ Ojo</div>Para integrar, el objetivo es convertir productos y divisiones en <b>sumas y restas de potencias</b>, porque esas sí tienen regla directa.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Notación sumatoria (Σ)</summary>
+    <div class="in">
+      <p>La letra griega <b>Σ</b> (sigma mayúscula) significa <b>"suma todo esto"</b>. Es una forma corta de escribir sumas largas.</p>
+      <div class="eq big"><span class="sum"><i>4</i><i class="s">Σ</i><i>i = 1</i></span> i = 1 + 2 + 3 + 4 = 10</div>
+      <p>Se lee: "suma de <span class="m">i</span>, desde <span class="m">i = 1</span> hasta 4". La <span class="m">i</span> es un contador que va tomando los valores 1, 2, 3, 4.</p>
+      <p>Otro ejemplo, paso a paso:</p>
+      <ol class="steps">
+        <li>Queremos calcular <span class="m"><span class="sum"><i>3</i><i class="s">Σ</i><i>i = 1</i></span> i²</span>.</li>
+        <li>Reemplazamos <span class="m">i</span> por 1, luego por 2, luego por 3:<div class="eq">1² + 2² + 3²</div></li>
+        <li>Calculamos cada potencia:<div class="eq">1 + 4 + 9</div></li>
+        <li>Sumamos:<div class="eq">14</div></li>
+      </ol>
+      <div class="box analogy"><div class="t">💡 Analogía</div>Σ es como el <b>total de una factura del súper</b>: cada línea es un producto, y Σ dice "suma todas las líneas".</div>
+      <h3>Fórmulas útiles (las usaremos en la sección 4)</h3>
+      <div class="tw"><table>
+        <tr><th>Suma</th><th>Resultado</th></tr>
+        <tr><td class="m"><span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> 1</td><td class="m">n</td></tr>
+        <tr><td class="m"><span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> i</td><td class="m"><span class="fr"><span>n(n + 1)</span><span>2</span></span></td></tr>
+        <tr><td class="m"><span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> i²</td><td class="m"><span class="fr"><span>n(n + 1)(2n + 1)</span><span>6</span></span></td></tr>
+        <tr><td class="m"><span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> i³</td><td class="m">[<span class="fr"><span>n(n + 1)</span><span>2</span></span>]²</td></tr>
+      </table></div>
+      <p>Comprobemos la segunda con <span class="m">n = 4</span>: <span class="m"><span class="fr"><span>4 · 5</span><span>2</span></span> = <span class="fr"><span>20</span><span>2</span></span> = 10</span>. ¡Coincide con 1 + 2 + 3 + 4 = 10!</p>
+      <p>Propiedades: una constante puede salir de la suma, y la suma de dos cosas se puede separar:</p>
+      <div class="eq"><span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> c · aᵢ = c · <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> aᵢ &nbsp;&nbsp;&nbsp;&nbsp; <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> (aᵢ + bᵢ) = <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> aᵢ + <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> bᵢ</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Límites al infinito</summary>
+    <div class="in">
+      <p>La idea más importante: si dividimos un número fijo entre algo que crece sin parar, el resultado se acerca a cero.</p>
+      <div class="eq"><span class="m">lim</span><sub>n→∞</sub> <span class="fr"><span>1</span><span>n</span></span> = 0</div>
+      <p>Piensa en repartir <b>una pizza</b> entre 10, luego 1 000, luego 1 000 000 de personas: a cada quien le toca casi nada.</p>
+      <p>Ejemplo que aparecerá más adelante, paso a paso:</p>
+      <ol class="steps">
+        <li>Queremos <span class="m">lim<sub>n→∞</sub> <span class="fr"><span>2n² + 3n + 1</span><span>6n²</span></span></span>.</li>
+        <li>Separamos la fracción en tres partes (cada término de arriba entre el de abajo):<div class="eq"><span class="fr"><span>2n²</span><span>6n²</span></span> + <span class="fr"><span>3n</span><span>6n²</span></span> + <span class="fr"><span>1</span><span>6n²</span></span></div></li>
+        <li>Simplificamos cada una:<div class="eq"><span class="fr"><span>1</span><span>3</span></span> + <span class="fr"><span>1</span><span>2n</span></span> + <span class="fr"><span>1</span><span>6n²</span></span></div></li>
+        <li>Cuando <span class="m">n → ∞</span>, las dos últimas fracciones tienen <span class="m">n</span> abajo, así que se van a 0:<div class="eq"><span class="fr"><span>1</span><span>3</span></span> + 0 + 0 = <span class="fr"><span>1</span><span>3</span></span></div></li>
+      </ol>
+    </div>
+  </details>
+
+  <details>
+    <summary>Derivadas básicas (para comprobar integrales)</summary>
+    <div class="in">
+      <p>Más adelante verás que integrar es "deshacer" una derivada. Por eso conviene tener a mano estas:</p>
+      <div class="tw"><table>
+        <tr><th>Función</th><th>Derivada</th></tr>
+        <tr><td class="m">c (constante)</td><td class="m">0</td></tr>
+        <tr><td class="m">xⁿ</td><td class="m">n · xⁿ⁻¹</td></tr>
+        <tr><td class="m">eˣ</td><td class="m">eˣ</td></tr>
+        <tr><td class="m">ln x</td><td class="m"><span class="fr"><span>1</span><span>x</span></span></td></tr>
+        <tr><td class="m">sen x</td><td class="m">cos x</td></tr>
+        <tr><td class="m">cos x</td><td class="m">−sen x</td></tr>
+        <tr><td class="m">tan x</td><td class="m">sec² x</td></tr>
+      </table></div>
+    </div>
+  </details>
+</section>
+
+<!-- ================= 1. PROBLEMA ================= -->
+<section class="sec" id="problema">
+  <div class="sec-head"><div class="num">1</div><h2>La gran pregunta: el área bajo una curva</h2></div>
+  <p class="lead">Todo empieza con una pregunta que parece sencilla.</p>
+
+  <p>Calcular el área de un rectángulo o de un triángulo es fácil: tenemos fórmulas. Pero, ¿qué pasa si la figura tiene un borde <b>curvo</b>?</p>
+  <p>Imagina la gráfica de <span class="m">f(x) = x²</span> entre <span class="m">x = 0</span> y <span class="m">x = 1</span>. La región que queda entre la curva y el eje <span class="m">x</span> tiene tres lados rectos (el piso, la pared izquierda y la derecha) y un "techo" curvo. No existe una fórmula de geometría básica para eso.</p>
+
+  <svg viewBox="0 0 320 200" style="width:100%;max-width:420px;display:block;margin:14px auto" role="img" aria-label="Área bajo la curva y igual x al cuadrado">
+    <path d="M40 170 L40 170 Q150 170 260 30 L260 170 Z" fill="var(--acc-soft)"/>
+    <line x1="30" y1="170" x2="300" y2="170" stroke="var(--muted)" stroke-width="1.5"/>
+    <line x1="40" y1="190" x2="40" y2="15" stroke="var(--muted)" stroke-width="1.5"/>
+    <path d="M40 170 Q150 170 260 30" fill="none" stroke="var(--acc)" stroke-width="3"/>
+    <text x="36" y="188" font-size="13" fill="var(--muted)" text-anchor="middle">0</text>
+    <text x="260" y="188" font-size="13" fill="var(--muted)" text-anchor="middle">1</text>
+    <text x="160" y="148" font-size="15" fill="var(--acc-ink)" text-anchor="middle" font-weight="700">¿Área = ?</text>
+    <text x="235" y="40" font-size="14" fill="var(--acc)" font-style="italic">y = x²</text>
+  </svg>
+
+  <div class="box analogy"><div class="t">💡 Analogía</div>
+    Imagina que quieres pintar una pared que, en lugar de terminar en línea recta arriba, termina en forma de <b>colina</b> (como debajo de unas gradas o un techo curvo). Para comprar la pintura necesitas saber cuántos metros cuadrados tiene. ¿Cómo los calculas si el borde es curvo?
+  </div>
+
+  <h3>¿Y por qué importa tanto?</h3>
+  <p>Porque "área bajo una curva" aparece en muchísimas situaciones reales, no solo en dibujos:</p>
+  <div class="grid2">
+    <div class="mini"><h4>🚗 Distancia recorrida</h4><p>Si la velocidad es constante, distancia = velocidad × tiempo (un rectángulo). Si la velocidad cambia, la distancia es el área bajo la gráfica de velocidad.</p></div>
+    <div class="mini"><h4>💧 Agua acumulada</h4><p>Si sabes cuánta agua entra por minuto a un tanque (y cambia con el tiempo), el total acumulado es un área bajo una curva.</p></div>
+    <div class="mini"><h4>⚡ Consumo eléctrico</h4><p>El recibo de luz mide energía: el área bajo la curva de potencia que usó tu casa a lo largo del mes.</p></div>
+  </div>
+  <div class="box key"><div class="t">★ Idea central</div>La integral nace para responder: <b>¿cuánto se acumula algo</b> cuando la cantidad va cambiando? Geométricamente, eso es el área bajo una curva.</div>
+</section>
+
+<!-- ================= 2. RECTÁNGULOS ================= -->
+<section class="sec" id="rectangulos">
+  <div class="sec-head"><div class="num">2</div><h2>La idea genial: usar rectángulos</h2></div>
+  <p class="lead">Si no sabemos medir figuras curvas, las aproximamos con figuras que sí sabemos medir.</p>
+
+  <p>La estrategia que usaron los matemáticos fue esta:</p>
+  <ol class="steps">
+    <li><b>Dividir</b> el intervalo (el "piso") en pedacitos del mismo ancho.</li>
+    <li>Sobre cada pedacito, <b>dibujar un rectángulo</b> cuya altura sea la altura de la curva en algún punto de ese pedacito.</li>
+    <li><b>Sumar</b> las áreas de todos los rectángulos (base × altura de cada uno).</li>
+    <li>Ese total es una <b>aproximación</b> del área real. Con pocos rectángulos sobra o falta un poco de área en cada uno.</li>
+    <li>Si usamos rectángulos <b>más delgados</b> (más cantidad), el error se hace cada vez más pequeño.</li>
+  </ol>
+
+  <div class="box analogy"><div class="t">💡 Analogía: los píxeles</div>
+    Una foto en la pantalla está hecha de cuadraditos (píxeles). Con pocos píxeles, un círculo se ve "escalonado". Con millones de píxeles, el círculo se ve perfectamente redondo. Con los rectángulos pasa lo mismo: <b>entre más delgados y más cantidad, mejor se parece la suma al área real</b>.
+  </div>
+
+  <h3>¿Dónde medimos la altura de cada rectángulo?</h3>
+  <p>Hay varias opciones y todas son válidas:</p>
+  <div class="grid2">
+    <div class="mini"><h4>Extremo izquierdo</h4><p>La altura se toma en el borde izquierdo de cada pedacito.</p></div>
+    <div class="mini"><h4>Extremo derecho</h4><p>La altura se toma en el borde derecho de cada pedacito.</p></div>
+    <div class="mini"><h4>Punto medio</h4><p>La altura se toma justo en el centro. Suele dar una mejor aproximación.</p></div>
+  </div>
+  <p>Con pocos rectángulos, cada opción da un número distinto. Pero lo sorprendente es que, cuando usamos muchísimos rectángulos, <b>todas terminan acercándose al mismo número</b>: el área real. Compruébalo tú misma en el simulador.</p>
+</section>
+
+<!-- ================= 3. SIMULADOR ================= -->
+<section class="sec" id="simulador">
+  <div class="sec-head"><div class="num">3</div><h2>Simulador interactivo</h2></div>
+  <p class="lead">Mueve los controles y observa cómo los rectángulos se ajustan a la curva. Presiona ▶ para ver la animación.</p>
+
+  <div class="sim">
+    <canvas id="cv" aria-label="Gráfica con rectángulos bajo una curva"></canvas>
+    <div class="sim-ctrl">
+      <div class="row"><span class="lbl">Función</span>
+        <select id="fSel">
+          <option value="x2">f(x) = x²</option>
+          <option value="lin">f(x) = 2x + 1</option>
+          <option value="sqrt">f(x) = √x</option>
+          <option value="cub">f(x) = x³ − 3x + 3</option>
+          <option value="sin">f(x) = sen x (área con signo)</option>
+        </select>
+      </div>
+      <div class="row"><span class="lbl">Altura en</span>
+        <div class="seg" id="mSeg">
+          <button data-m="L">Izquierda</button>
+          <button data-m="R" class="on">Derecha</button>
+          <button data-m="M">Punto medio</button>
+        </div>
+      </div>
+      <div class="row"><span class="lbl">Rectángulos n</span>
+        <input type="range" id="nR" min="1" max="200" value="4">
+        <span class="val" id="nV">4</span>
+        <button class="play" id="playBtn">▶ Animar</button>
+      </div>
+      <div class="row"><span class="lbl">Desde a</span><input type="range" id="aR" step="0.1"><span class="val" id="aV"></span></div>
+      <div class="row"><span class="lbl">Hasta b</span><input type="range" id="bR" step="0.1"><span class="val" id="bV"></span></div>
+      <div class="row"><label class="chk"><input type="checkbox" id="exactChk"> Mostrar el área exacta (sombreada)</label></div>
+      <div class="stats">
+        <div class="stat"><small>Ancho Δx</small><b id="sDx">–</b></div>
+        <div class="stat"><small>Suma de rectángulos</small><b id="sAp">–</b></div>
+        <div class="stat"><small>Área exacta</small><b id="sEx">–</b></div>
+        <div class="stat"><small>Error</small><b id="sEr">–</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box key"><div class="t">★ Experimentos sugeridos</div>
+    <ol style="margin:4px 0">
+      <li>Con <span class="m">f(x) = x²</span>, deja <span class="m">n = 4</span> y compara "Izquierda" y "Derecha". Una se queda corta y la otra se pasa.</li>
+      <li>Ahora sube <span class="m">n</span> poco a poco. Mira cómo el <b>error</b> se acerca a 0.</li>
+      <li>Elige <span class="m">sen x</span> de 0 a 6.3. Los rectángulos <span class="hln">rojos</span> están debajo del eje: su área se <b>resta</b> (lo verás en la sección 5).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= 4. RIEMANN ================= -->
+<section class="sec" id="riemann">
+  <div class="sec-head"><div class="num">4</div><h2>Sumas de Riemann</h2></div>
+  <p class="lead">Ponerle nombre y fórmula a la idea de los rectángulos.</p>
+
+  <p>El matemático alemán <b>Bernhard Riemann</b> (siglo XIX) escribió de forma ordenada esta idea de sumar rectángulos. Por eso, a esa suma se le llama <b>suma de Riemann</b>. Vamos a construir su fórmula pieza por pieza.</p>
+
+  <h3>Pieza 1: el ancho de cada rectángulo (Δx)</h3>
+  <p>Si el intervalo va de <span class="m">a</span> a <span class="m">b</span> y lo partimos en <span class="m">n</span> pedazos iguales, cada pedazo mide:</p>
+  <div class="eq big">Δx = <span class="fr"><span>b − a</span><span>n</span></span></div>
+  <p>El símbolo <span class="m">Δx</span> (se lee "delta x") significa "un pedacito de x". Es como partir una tabla de 1 metro en 4 partes iguales: cada una mide <span class="m">1/4 = 0.25</span> m.</p>
+
+  <h3>Pieza 2: dónde medir la altura (xᵢ)</h3>
+  <p>Usando el <b>extremo derecho</b>, los puntos donde medimos son:</p>
+  <div class="eq">xᵢ = a + i · Δx, &nbsp;&nbsp; con i = 1, 2, 3, …, n</div>
+  <p>Es decir: partimos de <span class="m">a</span> y avanzamos <span class="m">i</span> pasos de tamaño <span class="m">Δx</span>.</p>
+
+  <h3>Pieza 3: el área de un rectángulo</h3>
+  <div class="eq">Área del rectángulo número i = <span class="hl">f(xᵢ)</span> · <span class="hl2">Δx</span> &nbsp;&nbsp;=&nbsp;&nbsp; <span class="hl">altura</span> × <span class="hl2">base</span></div>
+
+  <h3>Juntando todo: la suma de Riemann</h3>
+  <div class="eq big">Sₙ = <span class="sum"><i>n</i><i class="s">Σ</i><i>i = 1</i></span> f(xᵢ) · Δx</div>
+  <p>Se lee: "sumar las áreas de los <span class="m">n</span> rectángulos".</p>
+
+  <h3>Ejemplo 1: f(x) = x² en [0, 1] con 4 rectángulos</h3>
+  <ol class="steps">
+    <li>Identificamos los datos: <span class="m">a = 0</span>, <span class="m">b = 1</span>, <span class="m">n = 4</span>.</li>
+    <li>Calculamos el ancho:<div class="eq">Δx = <span class="fr"><span>1 − 0</span><span>4</span></span> = <span class="fr"><span>1</span><span>4</span></span> = 0.25</div></li>
+    <li>Calculamos los puntos (extremo derecho), <span class="m">xᵢ = 0 + i · 0.25</span>:<div class="eq">x₁ = 0.25, &nbsp; x₂ = 0.5, &nbsp; x₃ = 0.75, &nbsp; x₄ = 1</div></li>
+    <li>Evaluamos la función en cada punto (elevamos al cuadrado):<div class="eq">f(0.25) = 0.0625, &nbsp; f(0.5) = 0.25, &nbsp; f(0.75) = 0.5625, &nbsp; f(1) = 1</div></li>
+    <li>Sumamos las alturas:<div class="eq">0.0625 + 0.25 + 0.5625 + 1 = 1.875</div></li>
+    <li>Como todos tienen la misma base, multiplicamos la suma de alturas por <span class="m">Δx</span>:<div class="eq">S₄ = 1.875 × 0.25 = 0.46875</div></li>
+  </ol>
+  <p>Si repites el proceso con el <b>extremo izquierdo</b> (<span class="m">x = 0, 0.25, 0.5, 0.75</span>), obtienes <span class="m">(0 + 0.0625 + 0.25 + 0.5625) × 0.25 = 0.21875</span>. El área real queda entre esos dos valores. ¡Ya la tenemos "acorralada"!</p>
+
+  <h3>Ejemplo 2: el mismo cálculo, pero con n rectángulos</h3>
+  <p>Ahora hacemos lo mismo sin decir cuántos rectángulos son. Esto nos permitirá ver qué pasa cuando <span class="m">n</span> crece muchísimo.</p>
+  <ol class="steps">
+    <li>El ancho:<div class="eq">Δx = <span class="fr"><span>1 − 0</span><span>n</span></span> = <span class="fr"><span>1</span><span>n</span></span></div></li>
+    <li>Los puntos:<div class="eq">xᵢ = 0 + i · <span class="fr"><span>1</span><span>n</span></span> = <span class="fr"><span>i</span><span>n</span></span></div></li>
+    <li>La altura en cada punto (elevamos al cuadrado numerador y denominador):<div class="eq">f(xᵢ) = (<span class="fr"><span>i</span><span>n</span></span>)² = <span class="fr"><span>i²</span><span>n²</span></span></div></li>
+    <li>Armamos la suma de Riemann:<div class="eq">Sₙ = <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> <span class="fr"><span>i²</span><span>n²</span></span> · <span class="fr"><span>1</span><span>n</span></span> = <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> <span class="fr"><span>i²</span><span>n³</span></span></div></li>
+    <li><span class="m">n³</span> no cambia mientras <span class="m">i</span> avanza, así que sale de la suma como constante:<div class="eq">Sₙ = <span class="fr"><span>1</span><span>n³</span></span> · <span class="sum"><i>n</i><i class="s">Σ</i><i>i=1</i></span> i²</div></li>
+    <li>Usamos la fórmula de la suma de cuadrados (está en Conocimientos previos):<div class="eq">Sₙ = <span class="fr"><span>1</span><span>n³</span></span> · <span class="fr"><span>n(n + 1)(2n + 1)</span><span>6</span></span></div></li>
+    <li>Simplificamos una <span class="m">n</span> de arriba con una de abajo (<span class="m">n³ ÷ n = n²</span>):<div class="eq">Sₙ = <span class="fr"><span>(n + 1)(2n + 1)</span><span>6n²</span></span></div></li>
+    <li>Multiplicamos los paréntesis: <span class="m">(n + 1)(2n + 1) = 2n² + n + 2n + 1 = 2n² + 3n + 1</span><div class="eq">Sₙ = <span class="fr"><span>2n² + 3n + 1</span><span>6n²</span></span></div></li>
+    <li>Comprobamos con <span class="m">n = 4</span>: <span class="m"><span class="fr"><span>2(16) + 12 + 1</span><span>6(16)</span></span> = <span class="fr"><span>45</span><span>96</span></span> = 0.46875</span>. ¡Igual que en el Ejemplo 1! ✔</li>
+  </ol>
+
+  <h3>El paso final: rectángulos infinitamente delgados</h3>
+  <p>Ahora hacemos que la cantidad de rectángulos crezca sin límite (<span class="m">n → ∞</span>). Esto ya lo resolvimos en Conocimientos previos:</p>
+  <ol class="steps">
+    <li>Planteamos el límite:<div class="eq">lim<sub>n→∞</sub> <span class="fr"><span>2n² + 3n + 1</span><span>6n²</span></span></div></li>
+    <li>Separamos y simplificamos:<div class="eq">lim<sub>n→∞</sub> ( <span class="fr"><span>1</span><span>3</span></span> + <span class="fr"><span>1</span><span>2n</span></span> + <span class="fr"><span>1</span><span>6n²</span></span> )</div></li>
+    <li>Los términos con <span class="m">n</span> abajo se van a cero:<div class="eq">= <span class="fr"><span>1</span><span>3</span></span> ≈ 0.3333</div></li>
+  </ol>
+  <div class="box good"><div class="t">✔ Conclusión</div>El área exacta bajo <span class="m">y = x²</span> entre 0 y 1 es <b>1/3</b>. Ya no es una aproximación: el límite eliminó el error por completo.</div>
+</section>
+
+<!-- ================= 5. INTEGRAL ================= -->
+<section class="sec" id="integral">
+  <div class="sec-head"><div class="num">5</div><h2>Nace la integral definida</h2></div>
+  <p class="lead">Lo que acabamos de hacer tiene nombre propio.</p>
+
+  <p>Al límite de las sumas de Riemann, cuando los rectángulos se hacen infinitamente delgados, se le llama <b>integral definida</b>:</p>
+  <div class="eq big"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx = lim<sub>n→∞</sub> <span class="sum"><i>n</i><i class="s">Σ</i><i>i = 1</i></span> f(xᵢ) Δx</div>
+
+  <h3>¿Qué significa cada símbolo?</h3>
+  <div class="tw"><table>
+    <tr><th>Símbolo</th><th>Nombre</th><th>Qué representa</th></tr>
+    <tr><td class="m" style="font-size:1.4em">∫</td><td>Signo de integral</td><td>Es una "S" alargada, de <b>Suma</b>. Reemplaza a la Σ.</td></tr>
+    <tr><td class="m">a, b</td><td>Límites de integración</td><td>Dónde empieza (a) y dónde termina (b) la región.</td></tr>
+    <tr><td class="m">f(x)</td><td>Integrando</td><td>La altura de cada rectángulo.</td></tr>
+    <tr><td class="m">dx</td><td>Diferencial</td><td>El ancho infinitamente pequeño: es lo que queda de <span class="m">Δx</span> cuando <span class="m">n → ∞</span>.</td></tr>
+  </table></div>
+  <p>Fíjate en el paralelo: <span class="m">Σ → ∫</span> &nbsp;y&nbsp; <span class="m">Δx → dx</span>. La notación misma te recuerda que una integral es <b>una suma de rectángulos infinitamente delgados</b>.</p>
+  <p>Entonces, el resultado de la sección anterior se escribe así:</p>
+  <div class="eq big"><span class="int"><i class="s">∫</i><i class="up">1</i><i class="lo">0</i></span> x² dx = <span class="fr"><span>1</span><span>3</span></span></div>
+
+  <div class="box analogy"><div class="t">💡 Analogía: una alcancía</div>
+    <span class="m">f(x)</span> es cuánto dinero metes cada día y <span class="m">dx</span> es cada día. La integral es <b>todo lo que se acumuló</b> en la alcancía entre el día <span class="m">a</span> y el día <span class="m">b</span>.
+  </div>
+
+  <h3>Área con signo: cuando la curva va por debajo del eje</h3>
+  <p>Si la función es negativa, la "altura" <span class="m">f(xᵢ)</span> es un número negativo, así que el rectángulo aporta un valor <b>negativo</b> a la suma.</p>
+  <ul>
+    <li>Partes <b>arriba</b> del eje x → suman.</li>
+    <li>Partes <b>debajo</b> del eje x → restan.</li>
+  </ul>
+  <p>Por eso la integral de <span class="m">sen x</span> de <span class="m">0</span> a <span class="m">2π</span> da <b>0</b>: la "colina" de arriba y el "valle" de abajo son del mismo tamaño y se cancelan. Pruébalo en el simulador.</p>
+  <div class="box analogy"><div class="t">💡 Analogía: la cuenta del banco</div>Los depósitos (arriba del eje) suman y los retiros (abajo del eje) restan. La integral te dice el <b>saldo neto</b>, no cuánto dinero movilizaste en total.</div>
+  <div class="box warn"><div class="t">⚠ Ojo</div>Si te piden el <b>área total</b> (sin signo), debes calcular por separado las partes de arriba y de abajo, y sumar los valores <b>positivos</b> de cada una.</div>
+</section>
+
+<!-- ================= 6. TFC ================= -->
+<section class="sec" id="tfc">
+  <div class="sec-head"><div class="num">6</div><h2>El atajo: Teorema Fundamental del Cálculo</h2></div>
+  <p class="lead">Calcular límites de sumas cada vez es agotador. Por suerte, existe un atajo enorme.</p>
+
+  <p>Hacer sumas de Riemann para cada función sería larguísimo. Newton y Leibniz descubrieron que las integrales y las derivadas están conectadas: <b>son operaciones inversas</b>, como sumar y restar, o multiplicar y dividir.</p>
+
+  <h3>La antiderivada (o primitiva)</h3>
+  <p>Una <b>antiderivada</b> de <span class="m">f(x)</span> es una función <span class="m">F(x)</span> cuya derivada es <span class="m">f(x)</span>:</p>
+  <div class="eq">F′(x) = f(x)</div>
+  <p>Ejemplo: ¿qué función, al derivarla, da <span class="m">2x</span>? Respuesta: <span class="m">x²</span>, porque <span class="m">(x²)′ = 2x</span>.</p>
+  <p>Pero también <span class="m">x² + 5</span>, <span class="m">x² − 7</span>, <span class="m">x² + 100</span>… ¡todas tienen derivada <span class="m">2x</span>! Porque la derivada de una constante es 0. Por eso escribimos:</p>
+  <div class="eq big"><span class="int"><i class="s">∫</i></span> 2x dx = x² + C</div>
+  <p>Esta integral <b>sin límites</b> se llama <b>integral indefinida</b>, y la <span class="m">C</span> representa "cualquier constante".</p>
+  <div class="box analogy"><div class="t">💡 Analogía: la constante C</div>
+    Sabes que un tanque se llena a cierta velocidad, pero nadie te dijo cuánta agua tenía <b>al inicio</b>. Puedes describir cómo crece el agua, pero siempre te falta ese "valor inicial". Esa incógnita es la <span class="m">C</span>.
+  </div>
+  <div class="box analogy"><div class="t">💡 Analogía: rebobinar</div>
+    Derivar es como ver un video hacia adelante (de la distancia obtengo la velocidad). Integrar es <b>rebobinarlo</b> (de la velocidad recupero la distancia).
+  </div>
+
+  <h3>El teorema (versión práctica)</h3>
+  <p>Si <span class="m">F</span> es una antiderivada de <span class="m">f</span>, entonces:</p>
+  <div class="eq big"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx = F(b) − F(a)</div>
+  <p>Es decir: para calcular el área ya no necesitamos rectángulos. Solo buscamos la antiderivada, la evaluamos en <span class="m">b</span>, la evaluamos en <span class="m">a</span> y restamos. Se suele escribir con corchetes: <span class="m"><span class="ev">[F(x)]<span class="lims"><i>b</i><i>a</i></span></span></span>.</p>
+  <div class="box analogy"><div class="t">💡 Analogía: el odómetro</div>
+    Para saber cuántos kilómetros recorriste entre la 1 p. m. y las 3 p. m., no necesitas sumar la velocidad de cada segundo: lees el odómetro a las 3, le restas lo que marcaba a la 1, y listo. El odómetro es la antiderivada <span class="m">F</span>.
+  </div>
+
+  <h3>Comprobemos con el ejemplo de la sección 4</h3>
+  <ol class="steps">
+    <li>Queremos <span class="m"><span class="int"><i class="s">∫</i><i class="up">1</i><i class="lo">0</i></span> x² dx</span>.</li>
+    <li>Buscamos una antiderivada de <span class="m">x²</span>. Como <span class="m">(<span class="fr"><span>x³</span><span>3</span></span>)′ = <span class="fr"><span>3x²</span><span>3</span></span> = x²</span>, tomamos:<div class="eq">F(x) = <span class="fr"><span>x³</span><span>3</span></span></div></li>
+    <li>Evaluamos en el límite de arriba (<span class="m">b = 1</span>):<div class="eq">F(1) = <span class="fr"><span>1³</span><span>3</span></span> = <span class="fr"><span>1</span><span>3</span></span></div></li>
+    <li>Evaluamos en el límite de abajo (<span class="m">a = 0</span>):<div class="eq">F(0) = <span class="fr"><span>0³</span><span>3</span></span> = 0</div></li>
+    <li>Restamos:<div class="eq">F(1) − F(0) = <span class="fr"><span>1</span><span>3</span></span> − 0 = <span class="fr"><span>1</span><span>3</span></span></div></li>
+  </ol>
+  <div class="box good"><div class="t">✔ ¡Mismo resultado!</div>Con rectángulos y límites tardamos 9 pasos; con el teorema, 4. Y ambos caminos llegan a <b>1/3</b>.</div>
+  <div class="box warn"><div class="t">⚠ ¿Y la C?</div>En una integral definida la <span class="m">C</span> se cancela sola: <span class="m">(F(b) + C) − (F(a) + C) = F(b) − F(a)</span>. Por eso no se escribe.</div>
+</section>
+
+<!-- ================= 7. PROPIEDADES ================= -->
+<section class="sec" id="propiedades">
+  <div class="sec-head"><div class="num">7</div><h2>Propiedades de las integrales</h2></div>
+  <p class="lead">Reglas que facilitan el trabajo. Todas tienen sentido si piensas en "sumar rectángulos".</p>
+
+  <details open>
+    <summary>1. Constante por una función</summary>
+    <div class="in">
+      <div class="eq"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> k · f(x) dx = k · <span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx</div>
+      <p><b>Por qué:</b> si todos los rectángulos se hacen <span class="m">k</span> veces más altos, el área total también es <span class="m">k</span> veces más grande.</p>
+      <p><b>Ejemplo:</b> <span class="m"><span class="int"><i class="s">∫</i><i class="up">1</i><i class="lo">0</i></span> 6x² dx = 6 · <span class="int"><i class="s">∫</i><i class="up">1</i><i class="lo">0</i></span> x² dx = 6 · <span class="fr"><span>1</span><span>3</span></span> = 2</span></p>
+    </div>
+  </details>
+
+  <details>
+    <summary>2. Suma y resta</summary>
+    <div class="in">
+      <div class="eq"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> [f(x) ± g(x)] dx = <span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx ± <span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> g(x) dx</div>
+      <p><b>Por qué:</b> si cada rectángulo tiene altura "f más g", podemos sumar por separado la parte de f y la parte de g.</p>
+      <p><b>Analogía:</b> en una factura, puedes sumar primero todas las frutas y luego todas las verduras; el total es el mismo.</p>
+      <div class="box warn"><div class="t">⚠ Importante</div>Esto <b>no</b> funciona con multiplicación ni división: <span class="m">∫ f · g dx ≠ (∫ f dx)(∫ g dx)</span>. Por eso primero hay que desarrollar o simplificar.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>3. Integral de una constante</summary>
+    <div class="in">
+      <div class="eq"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> k dx = k · (b − a)</div>
+      <p><b>Por qué:</b> la gráfica de <span class="m">y = k</span> es una línea horizontal; el área debajo es un rectángulo de altura <span class="m">k</span> y base <span class="m">b − a</span>.</p>
+      <p><b>Ejemplo:</b> <span class="m"><span class="int"><i class="s">∫</i><i class="up">5</i><i class="lo">2</i></span> 4 dx = 4 · (5 − 2) = 4 · 3 = 12</span></p>
+    </div>
+  </details>
+
+  <details>
+    <summary>4. Intervalo de ancho cero</summary>
+    <div class="in">
+      <div class="eq"><span class="int"><i class="s">∫</i><i class="up">a</i><i class="lo">a</i></span> f(x) dx = 0</div>
+      <p><b>Por qué:</b> si empiezas y terminas en el mismo punto, la base mide 0, y cualquier altura por 0 da 0. Es como recorrer 0 minutos: no avanzas nada.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>5. Invertir los límites cambia el signo</summary>
+    <div class="in">
+      <div class="eq"><span class="int"><i class="s">∫</i><i class="up">a</i><i class="lo">b</i></span> f(x) dx = − <span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx</div>
+      <p><b>Por qué:</b> con el teorema, <span class="m">F(a) − F(b) = −(F(b) − F(a))</span>. Es como caminar de regreso: recorres la misma distancia, pero en sentido contrario.</p>
+      <p><b>Ejemplo:</b> <span class="m"><span class="int"><i class="s">∫</i><i class="up">0</i><i class="lo">1</i></span> x² dx = −<span class="fr"><span>1</span><span>3</span></span></span></p>
+    </div>
+  </details>
+
+  <details>
+    <summary>6. Unir intervalos (aditividad)</summary>
+    <div class="in">
+      <div class="eq"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx + <span class="int"><i class="s">∫</i><i class="up">c</i><i class="lo">b</i></span> f(x) dx = <span class="int"><i class="s">∫</i><i class="up">c</i><i class="lo">a</i></span> f(x) dx</div>
+      <p><b>Por qué:</b> si pintas la pared en dos partes, el total de pintura es la suma de ambas partes.</p>
+      <p><b>Ejemplo paso a paso</b> con <span class="m">f(x) = x²</span> y <span class="m">F(x) = <span class="fr"><span>x³</span><span>3</span></span></span>:</p>
+      <ol class="steps">
+        <li>De 0 a 1:<div class="eq">F(1) − F(0) = <span class="fr"><span>1</span><span>3</span></span> − 0 = <span class="fr"><span>1</span><span>3</span></span></div></li>
+        <li>De 1 a 2:<div class="eq">F(2) − F(1) = <span class="fr"><span>8</span><span>3</span></span> − <span class="fr"><span>1</span><span>3</span></span> = <span class="fr"><span>7</span><span>3</span></span></div></li>
+        <li>Sumamos las dos partes:<div class="eq"><span class="fr"><span>1</span><span>3</span></span> + <span class="fr"><span>7</span><span>3</span></span> = <span class="fr"><span>8</span><span>3</span></span></div></li>
+        <li>Directamente de 0 a 2:<div class="eq">F(2) − F(0) = <span class="fr"><span>8</span><span>3</span></span> − 0 = <span class="fr"><span>8</span><span>3</span></span> &nbsp; ✔ ¡Igual!</div></li>
+      </ol>
+    </div>
+  </details>
+
+  <details>
+    <summary>7. Comparación (signo de la integral)</summary>
+    <div class="in">
+      <p>Si <span class="m">f(x) ≥ 0</span> en todo <span class="m">[a, b]</span>, entonces <span class="m"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx ≥ 0</span>.</p>
+      <p>Y si <span class="m">f(x) ≥ g(x)</span> en todo el intervalo, entonces <span class="m"><span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> f(x) dx ≥ <span class="int"><i class="s">∫</i><i class="up">b</i><i class="lo">a</i></span> g(x) dx</span>.</p>
+      <p><b>Por qué:</b> si una curva siempre está más arriba que otra, tiene más área debajo. Sirve para revisar si un resultado "tiene sentido".</p>
+    </div>
+  </details>
+</section>
+
+<!-- ================= 8. DIRECTAS ================= -->
+<section class="sec" id="directas">
+  <div class="sec-head"><div class="num">8</div><h2>Integrales directas</h2></div>
+  <p class="lead">Como integrar es "deshacer" la derivada, cada derivada conocida nos regala una integral.</p>
+
+  <div class="tw"><table>
+    <tr><th>Integral</th><th>Resultado</th><th>¿De qué derivada sale?</th></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> k dx</td><td class="m">kx + C</td><td class="m">(kx)′ = k</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> xⁿ dx &nbsp;(n ≠ −1)</td><td class="m"><span class="fr"><span>xⁿ⁺¹</span><span>n + 1</span></span> + C</td><td class="m">(xⁿ⁺¹)′ = (n+1)xⁿ</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> <span class="fr"><span>1</span><span>x</span></span> dx</td><td class="m">ln|x| + C</td><td class="m">(ln x)′ = <span class="fr"><span>1</span><span>x</span></span></td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> eˣ dx</td><td class="m">eˣ + C</td><td class="m">(eˣ)′ = eˣ</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> aˣ dx</td><td class="m"><span class="fr"><span>aˣ</span><span>ln a</span></span> + C</td><td class="m">(aˣ)′ = aˣ ln a</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> cos x dx</td><td class="m">sen x + C</td><td class="m">(sen x)′ = cos x</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> sen x dx</td><td class="m">−cos x + C</td><td class="m">(−cos x)′ = sen x</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> sec² x dx</td><td class="m">tan x + C</td><td class="m">(tan x)′ = sec² x</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> csc² x dx</td><td class="m">−cot x + C</td><td class="m">(cot x)′ = −csc² x</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> sec x tan x dx</td><td class="m">sec x + C</td><td class="m">(sec x)′ = sec x tan x</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> csc x cot x dx</td><td class="m">−csc x + C</td><td class="m">(csc x)′ = −csc x cot x</td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> <span class="fr"><span>1</span><span>1 + x²</span></span> dx</td><td class="m">arctan x + C</td><td class="m">(arctan x)′ = <span class="fr"><span>1</span><span>1 + x²</span></span></td></tr>
+    <tr><td class="m"><span class="int"><i class="s">∫</i></span> <span class="fr"><span>1</span><span>√(1 − x²)</span></span> dx</td><td class="m">arcsen x + C</td><td class="m">(arcsen x)′ = <span class="fr"><span>1</span><span>√(1 − x²)</span></span></td></tr>
+  </table></div>
+
+  <div class="box key"><div class="t">★ La regla de la potencia en palabras</div>
+    <b>Súmale 1 al exponente y divide entre el nuevo exponente.</b> Es lo contrario de derivar (allá se baja el exponente y se le resta 1).
+  </div>
+  <div class="box warn"><div class="t">⚠ ¿Por qué n ≠ −1?</div>Si <span class="m">n = −1</span>, el nuevo exponente sería <span class="m">−1 + 1 = 0</span> y tendríamos que dividir entre 0. Por eso <span class="m">x⁻¹ = <span class="fr"><span>1</span><span>x</span></span></span> tiene su propia regla: <span class="m">ln|x|</span>.</div>
+  <div class="box good"><div class="t">✔ Truco para verificar</div>Siempre puedes <b>derivar tu respuesta</b>. Si obtienes la función de adentro de la integral, está correcta.</div>
+
+  <h3>Ejemplo A: un polinomio</h3>
+  <p class="m">∫ (3x² + 2x − 5) dx</p>
+  <ol class="steps">
+    <li>Separamos en tres integrales (propiedad de suma y resta):<div class="eq"><span class="int"><i class="s">∫</i></span> 3x² dx + <span class="int"><i class="s">∫</i></span> 2x dx − <span class="int"><i class="s">∫</i></span> 5 dx</div></li>
+    <li>Sacamos las constantes (propiedad 1):<div class="eq">3<span class="int"><i class="s">∫</i></span> x² dx + 2<span class="int"><i class="s">∫</i></span> x dx − <span class="int"><i class="s">∫</i></span> 5 dx</div></li>
+    <li>Aplicamos la regla de la potencia. Recuerda que <span class="m">x = x¹</span>:<div class="eq">3 · <span class="fr"><span>x³</span><span>3</span></span> + 2 · <span class="fr"><span>x²</span><span>2</span></span> − 5x + C</div></li>
+    <li>Simplificamos (3 entre 3 da 1, y 2 entre 2 da 1):<div class="eq">x³ + x² − 5x + C</div></li>
+    <li>Verificamos derivando:<div class="eq">(x³ + x² − 5x + C)′ = 3x² + 2x − 5 &nbsp; ✔</div></li>
+  </ol>
+
+  <h3>Ejemplo B: una raíz</h3>
+  <p class="m">∫ √x dx</p>
+  <ol class="steps">
+    <li>Escribimos la raíz como potencia:<div class="eq"><span class="int"><i class="s">∫</i></span> x<sup>1/2</sup> dx</div></li>
+    <li>Le sumamos 1 al exponente: <span class="m"><span class="fr"><span>1</span><span>2</span></span> + 1 = <span class="fr"><span>1</span><span>2</span></span> + <span class="fr"><span>2</span><span>2</span></span> = <span class="fr"><span>3</span><span>2</span></span></span><div class="eq"><span class="fr"><span>x<sup>3/2</sup></span><span>3/2</span></span> + C</div></li>
+    <li>Dividir entre <span class="m">3/2</span> es lo mismo que multiplicar por su recíproco <span class="m">2/3</span>:<div class="eq"><span class="fr"><span>2</span><span>3</span></span> x<sup>3/2</sup> + C</div></li>
+    <li>Verificamos: <span class="m">(<span class="fr"><span>2</span><span>3</span></span> x<sup>3/2</sup>)′ = <span class="fr"><span>2</span><span>3</span></span> · <span class="fr"><span>3</span><span>2</span></span> x<sup>1/2</sup> = x<sup>1/2</sup> = √x</span> ✔</li>
+  </ol>
+
+  <h3>Ejemplo C: una potencia en el denominador</h3>
+  <p class="m">∫ <span class="fr"><span>1</span><span>x³</span></span> dx</p>
+  <ol class="steps">
+    <li>Subimos la potencia con exponente negativo:<div class="eq"><span class="int"><i class="s">∫</i></span> x⁻³ dx</div></li>
+    <li>Sumamos 1 al exponente: <span class="m">−3 + 1 = −2</span><div class="eq"><span class="fr"><span>x⁻²</span><span>−2</span></span> + C</div></li>
+    <li>Regresamos la potencia negativa al denominador para que se vea más ordenado:<div class="eq">−<span class="fr"><span>1</span><span>2x²</span></span> + C</div></li>
+  </ol>
+
+  <h3>Ejemplo D: desarrollar antes de integrar</h3>
+  <p class="m">∫ (x + 1)² dx</p>
+  <ol class="steps">
+    <li>No hay regla directa para un paréntesis al cuadrado, así que desarrollamos el binomio:<div class="eq">(x + 1)² = x² + 2x + 1</div></li>
+    <li>Integramos término por término:<div class="eq"><span class="int"><i class="s">∫</i></span> x² dx + <span class="int"><i class="s">∫</i></span> 2x dx + <span class="int"><i class="s">∫</i></span> 1 dx</div></li>
+    <li>Aplicamos las reglas:<div class="eq"><span class="fr"><span>x³</span><span>3</span></span> + 2 · <span class="fr"><span>x²</span><span>2</span></span> + x + C</div></li>
+    <li>Simplificamos:<div class="eq"><span class="fr"><span>x³</span><span>3</span></span> + x² + x + C</div></li>
+  </ol>
+
+  <h3>Ejemplo E: factorizar antes de integrar</h3>
+  <p class="m">∫ <span class="fr"><span>x² − 1</span><span>x − 1</span></span> dx</p>
+  <ol class="steps">
+    <li>Reconocemos una diferencia de cuadrados arriba:<div class="eq">x² − 1 = (x − 1)(x + 1)</div></li>
+    <li>Reemplazamos en la fracción:<div class="eq"><span class="fr"><span>(x − 1)(x + 1)</span><span>x − 1</span></span></div></li>
+    <li>Cancelamos el factor <span class="m">(x − 1)</span> que está arriba y abajo (válido cuando <span class="m">x ≠ 1</span>):<div class="eq">x + 1</div></li>
+    <li>Integramos:<div class="eq"><span class="int"><i class="s">∫</i></span> (x + 1) dx = <span class="fr"><span>x²</span><span>2</span></span> + x + C</div></li>
+  </ol>
+
+  <h3>Ejemplo F: dividir término por término</h3>
+  <p class="m">∫ <span class="fr"><span>x³ + 2x</span><span>x</span></span> dx</p>
+  <ol class="steps">
+    <li>Dividimos cada término de arriba entre <span class="m">x</span>:<div class="eq"><span class="fr"><span>x³</span><span>x</span></span> + <span class="fr"><span>2x</span><span>x</span></span> = x² + 2</div></li>
+    <li>Integramos:<div class="eq"><span class="int"><i class="s">∫</i></span> (x² + 2) dx = <span class="fr"><span>x³</span><span>3</span></span> + 2x + C</div></li>
+  </ol>
+
+  <h3>Ejemplo G: funciones trigonométricas y exponenciales</h3>
+  <p class="m">∫ (4 cos x − 3eˣ) dx</p>
+  <ol class="steps">
+    <li>Separamos y sacamos constantes:<div class="eq">4<span class="int"><i class="s">∫</i></span> cos x dx − 3<span class="int"><i class="s">∫</i></span> eˣ dx</div></li>
+    <li>Usamos la tabla (<span class="m">∫ cos x dx = sen x</span> y <span class="m">∫ eˣ dx = eˣ</span>):<div class="eq">4 sen x − 3eˣ + C</div></li>
+  </ol>
+
+  <h3>Ejemplo H: una integral definida completa</h3>
+  <p class="m"><span class="int"><i class="s">∫</i><i class="up">3</i><i class="lo">1</i></span> (2x + 1) dx</p>
+  <ol class="steps">
+    <li>Buscamos la antiderivada: <span class="m">∫ 2x dx = x²</span> y <span class="m">∫ 1 dx = x</span>:<div class="eq">F(x) = x² + x</div></li>
+    <li>La escribimos con los límites:<div class="eq"><span class="ev">[ x² + x ]<span class="lims"><i>3</i><i>1</i></span></span></div></li>
+    <li>Evaluamos en 3:<div class="eq">F(3) = 3² + 3 = 9 + 3 = 12</div></li>
+    <li>Evaluamos en 1:<div class="eq">F(1) = 1² + 1 = 1 + 1 = 2</div></li>
+    <li>Restamos:<div class="eq">12 − 2 = 10</div></li>
+  </ol>
+  <div class="box good"><div class="t">✔ Comprobación con geometría</div>
+    La gráfica de <span class="m">2x + 1</span> es una recta, así que el área bajo ella entre 1 y 3 es un <b>trapecio</b>. Alturas: <span class="m">f(1) = 3</span> y <span class="m">f(3) = 7</span>; ancho: <span class="m">3 − 1 = 2</span>.
+    Área <span class="m">= <span class="fr"><span>3 + 7</span><span>2</span></span> × 2 = 5 × 2 = 10</span>. ✔ ¡Coincide! (Puedes verlo también en el simulador con <span class="m">f(x) = 2x + 1</span>.)
+  </div>
+</section>
+
+<!-- ================= 9. PRÁCTICA ================= -->
+<section class="sec" id="practica">
+  <div class="sec-head"><div class="num">9</div><h2>Practica y autoevaluación</h2></div>
+  <p class="lead">Intenta resolver cada ejercicio en papel antes de abrir la solución.</p>
+
+  <h3>Ejercicios con solución</h3>
+  <p><b>1.</b> <span class="m"><span class="int"><i class="s">∫</i></span> (5x⁴ − 6x + 2) dx</span></p>
+  <details class="sol"><summary>Ver solución</summary><div class="in">
+    <ol class="steps">
+      <li>Separamos y sacamos constantes:<div class="eq">5<span class="int"><i class="s">∫</i></span> x⁴ dx − 6<span class="int"><i class="s">∫</i></span> x dx + <span class="int"><i class="s">∫</i></span> 2 dx</div></li>
+      <li>Regla de la potencia:<div class="eq">5 · <span class="fr"><span>x⁵</span><span>5</span></span> − 6 · <span class="fr"><span>x²</span><span>2</span></span> + 2x + C</div></li>
+      <li>Simplificamos:<div class="eq">x⁵ − 3x² + 2x + C</div></li>
+    </ol>
+  </div></details>
+
+  <p><b>2.</b> <span class="m"><span class="int"><i class="s">∫</i></span> <sup>3</sup>√x² dx</span></p>
+  <details class="sol"><summary>Ver solución</summary><div class="in">
+    <ol class="steps">
+      <li>Escribimos como potencia:<div class="eq"><span class="int"><i class="s">∫</i></span> x<sup>2/3</sup> dx</div></li>
+      <li>Sumamos 1 al exponente: <span class="m"><span class="fr"><span>2</span><span>3</span></span> + <span class="fr"><span>3</span><span>3</span></span> = <span class="fr"><span>5</span><span>3</span></span></span><div class="eq"><span class="fr"><span>x<sup>5/3</sup></span><span>5/3</span></span> + C</div></li>
+      <li>Dividir entre <span class="m">5/3</span> es multiplicar por <span class="m">3/5</span>:<div class="eq"><span class="fr"><span>3</span><span>5</span></span> x<sup>5/3</sup> + C</div></li>
+    </ol>
+  </div></details>
+
+  <p><b>3.</b> <span class="m"><span class="int"><i class="s">∫</i></span> <span class="fr"><span>x² + 5x + 6</span><span>x + 2</span></span> dx</span></p>
+  <details class="sol"><summary>Ver solución</summary><div class="in">
+    <ol class="steps">
+      <li>Factorizamos el trinomio (dos números que multiplicados den 6 y sumados den 5: 2 y 3):<div class="eq">x² + 5x + 6 = (x + 2)(x + 3)</div></li>
+      <li>Cancelamos <span class="m">(x + 2)</span>:<div class="eq"><span class="fr"><span>(x + 2)(x + 3)</span><span>x + 2</span></span> = x + 3</div></li>
+      <li>Integramos:<div class="eq"><span class="fr"><span>x²</span><span>2</span></span> + 3x + C</div></li>
+    </ol>
+  </div></details>
+
+  <p><b>4.</b> <span class="m"><span class="int"><i class="s">∫</i><i class="up">2</i><i class="lo">0</i></span> (x² + 1) dx</span></p>
+  <details class="sol"><summary>Ver solución</summary><div class="in">
+    <ol class="steps">
+      <li>Antiderivada:<div class="eq">F(x) = <span class="fr"><span>x³</span><span>3</span></span> + x</div></li>
+      <li>Evaluamos en 2:<div class="eq">F(2) = <span class="fr"><span>8</span><span>3</span></span> + 2 = <span class="fr"><span>8</span><span>3</span></span> + <span class="fr"><span>6</span><span>3</span></span> = <span class="fr"><span>14</span><span>3</span></span></div></li>
+      <li>Evaluamos en 0:<div class="eq">F(0) = 0 + 0 = 0</div></li>
+      <li>Restamos:<div class="eq"><span class="fr"><span>14</span><span>3</span></span> − 0 = <span class="fr"><span>14</span><span>3</span></span> ≈ 4.667</div></li>
+    </ol>
+  </div></details>
+
+  <p><b>5.</b> <span class="m"><span class="int"><i class="s">∫</i><i class="up">π</i><i class="lo">0</i></span> sen x dx</span></p>
+  <details class="sol"><summary>Ver solución</summary><div class="in">
+    <ol class="steps">
+      <li>Antiderivada (de la tabla):<div class="eq">F(x) = −cos x</div></li>
+      <li>Evaluamos en <span class="m">π</span>: <span class="m">cos π = −1</span><div class="eq">F(π) = −(−1) = 1</div></li>
+      <li>Evaluamos en 0: <span class="m">cos 0 = 1</span><div class="eq">F(0) = −1</div></li>
+      <li>Restamos:<div class="eq">1 − (−1) = 1 + 1 = 2</div></li>
+    </ol>
+    <p>Una sola "colina" de la función seno tiene área exactamente 2.</p>
+  </div></details>
+
+  <h3>Autoevaluación rápida <span class="score" id="score"></span></h3>
+  <div id="quiz"></div>
+</section>
+
+<!-- ================= RESUMEN ================= -->
+<section class="sec" id="resumen">
+  <div class="sec-head"><div class="num">★</div><h2>Resumen en una mirada</h2></div>
+  <div class="flow">
+    <div><b>1</b><span>Queremos el <b>área bajo una curva</b> (o "lo que se acumula" cuando algo cambia).</span></div>
+    <div><b>2</b><span>La aproximamos con <b>rectángulos</b>: base <span class="m">Δx</span> × altura <span class="m">f(xᵢ)</span>.</span></div>
+    <div><b>3</b><span>Sumarlos da la <b>suma de Riemann</b> <span class="m">Σ f(xᵢ)Δx</span>.</span></div>
+    <div><b>4</b><span>Con rectángulos infinitamente delgados (<span class="m">n → ∞</span>) el error desaparece: eso es la <b>integral definida</b> <span class="m">∫ f(x) dx</span>.</span></div>
+    <div><b>5</b><span>El <b>Teorema Fundamental</b> da el atajo: <span class="m">∫ₐᵇ f(x) dx = F(b) − F(a)</span>, con <span class="m">F′ = f</span>.</span></div>
+    <div><b>6</b><span>Las <b>propiedades</b> y la <b>tabla de integrales directas</b> nos permiten calcular rápido. Antes de integrar: desarrolla, factoriza o separa hasta tener sumas de potencias.</span></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Creado por: Claude Opus 5.5 (Anthropic)<span class="sep">·</span>con guía de: José Bernardo Barquero Bonilla
+</footer>
+
+<script>
+(function(){
+  /* ---------- tema ---------- */
+  var root=document.documentElement;
+  try{var t=localStorage.getItem("int-theme");if(t)root.setAttribute("data-theme",t);}catch(e){}
+  document.getElementById("themeBtn").onclick=function(){
+    var cur=root.getAttribute("data-theme");
+    var isDark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next=isDark?"light":"dark";
+    root.setAttribute("data-theme",next);
+    try{localStorage.setItem("int-theme",next);}catch(e){}
+    draw();
+  };
+  /* ---------- índice ---------- */
+  var toc=document.getElementById("toc");
+  document.getElementById("tocBtn").onclick=function(){toc.classList.add("open");};
+  document.getElementById("tocBg").onclick=function(){toc.classList.remove("open");};
+  toc.querySelectorAll("a").forEach(function(a){a.onclick=function(){toc.classList.remove("open");};});
+  /* ---------- progreso ---------- */
+  var prog=document.getElementById("prog");
+  window.addEventListener("scroll",function(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    prog.style.width=(h>0?window.scrollY/h*100:0)+"%";
+  },{passive:true});
+
+  /* ---------- simulador ---------- */
+  var F={
+    x2:{f:function(x){return x*x},min:-1,max:3,a:0,b:1},
+    lin:{f:function(x){return 2*x+1},min:0,max:4,a:1,b:3},
+    sqrt:{f:function(x){return Math.sqrt(Math.max(x,0))},min:0,max:6,a:0,b:4},
+    cub:{f:function(x){return x*x*x-3*x+3},min:-2.5,max:2.5,a:-2,b:2},
+    sin:{f:function(x){return Math.sin(x)},min:-1,max:7,a:0,b:6.3}
+  };
+  var cv=document.getElementById("cv"),ctx=cv.getContext("2d");
+  var fSel=document.getElementById("fSel"),nR=document.getElementById("nR"),aR=document.getElementById("aR"),bR=document.getElementById("bR");
+  var exactChk=document.getElementById("exactChk");
+  var method="R",cur=F.x2,W=0,H=0;
+
+  function setFunc(key){
+    cur=F[key];
+    [aR,bR].forEach(function(r){r.min=cur.min;r.max=cur.max;});
+    aR.value=cur.a;bR.value=cur.b;
+    draw();
+  }
+  function css(v){return getComputedStyle(root).getPropertyValue(v).trim();}
+  function simpson(f,a,b){var N=2000,h=(b-a)/N,s=f(a)+f(b);for(var i=1;i<N;i++)s+=f(a+i*h)*(i%2?4:2);return s*h/3;}
+  function fmt(v){return (Math.abs(v)<1e-10?0:v).toFixed(4);}
+
+  function resize(){
+    var w=cv.parentElement.clientWidth;
+    var h=Math.round(Math.min(Math.max(w*0.6,240),440));
+    var dpr=window.devicePixelRatio||1;
+    cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);W=w;H=h;draw();
+  }
+
+  function draw(){
+    if(!W)return;
+    var f=cur.f,n=+nR.value,a=+aR.value,b=+bR.value;
+    if(a>b){var t=a;a=b;b=t;}
+    document.getElementById("nV").textContent=n;
+    document.getElementById("aV").textContent=(+aR.value).toFixed(1);
+    document.getElementById("bV").textContent=(+bR.value).toFixed(1);
+    var ink=css("--ink"),muted=css("--muted"),line=css("--line"),acc=css("--acc"),neg=css("--neg"),teal=css("--teal"),card=css("--card");
+    // rango y
+    var ymin=0,ymax=0;
+    for(var k=0;k<=300;k++){var xx=cur.min+(cur.max-cur.min)*k/300,yy=f(xx);if(yy<ymin)ymin=yy;if(yy>ymax)ymax=yy;}
+    var pad=(ymax-ymin)*0.1||1;ymin-=pad;ymax+=pad;
+    var L=36,R=14,T=14,B=28;
+    function X(x){return L+(x-cur.min)/(cur.max-cur.min)*(W-L-R);}
+    function Y(y){return T+(ymax-y)/(ymax-ymin)*(H-T-B);}
+    ctx.fillStyle=card;ctx.fillRect(0,0,W,H);
+    // cuadrícula
+    ctx.lineWidth=1;ctx.strokeStyle=line;ctx.fillStyle=muted;ctx.font="11px system-ui,sans-serif";
+    var stepX=niceStep((cur.max-cur.min)/8),stepY=niceStep((ymax-ymin)/6);
+    ctx.textAlign="center";
+    for(var gx=Math.ceil(cur.min/stepX)*stepX;gx<=cur.max+1e-9;gx+=stepX){
+      ctx.beginPath();ctx.moveTo(X(gx),T);ctx.lineTo(X(gx),H-B);ctx.stroke();
+      ctx.fillText(round(gx),X(gx),H-B+16);
+    }
+    ctx.textAlign="right";
+    for(var gy=Math.ceil(ymin/stepY)*stepY;gy<=ymax+1e-9;gy+=stepY){
+      ctx.beginPath();ctx.moveTo(L,Y(gy));ctx.lineTo(W-R,Y(gy));ctx.stroke();
+      ctx.fillText(round(gy),L-6,Y(gy)+4);
+    }
+    // ejes
+    ctx.strokeStyle=muted;ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(L,Y(0));ctx.lineTo(W-R,Y(0));ctx.stroke();
+    if(cur.min<=0&&cur.max>=0){ctx.beginPath();ctx.moveTo(X(0),T);ctx.lineTo(X(0),H-B);ctx.stroke();}
+    // área exacta
+    if(exactChk.checked&&b>a){
+      ctx.beginPath();ctx.moveTo(X(a),Y(0));
+      for(var s=0;s<=200;s++){var xs=a+(b-a)*s/200;ctx.lineTo(X(xs),Y(f(xs)));}
+      ctx.lineTo(X(b),Y(0));ctx.closePath();
+      ctx.fillStyle=hexA(teal,0.28);ctx.fill();
+    }
+    // rectángulos
+    var dx=(b-a)/n,sum=0;
+    if(b>a){
+      for(var i=0;i<n;i++){
+        var x0=a+i*dx,xs2=method==="L"?x0:method==="R"?x0+dx:x0+dx/2,h=f(xs2);sum+=h*dx;
+        var col=h>=0?acc:neg;
+        var px=X(x0),pw=X(x0+dx)-px,py=Y(Math.max(h,0)),ph=Math.abs(Y(h)-Y(0));
+        ctx.fillStyle=hexA(col,exactChk.checked?0.35:0.22);ctx.fillRect(px,py,pw,ph);
+        if(pw>3){ctx.strokeStyle=hexA(col,0.9);ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,pw-1,ph-1);}
+        if(n<=30){ctx.fillStyle=col;ctx.beginPath();ctx.arc(X(xs2),Y(h),3,0,7);ctx.fill();}
+      }
+    }
+    // curva
+    ctx.strokeStyle=ink;ctx.lineWidth=2.4;ctx.beginPath();
+    for(var c=0;c<=400;c++){var xc=cur.min+(cur.max-cur.min)*c/400,yc=Y(f(xc));c?ctx.lineTo(X(xc),yc):ctx.moveTo(X(xc),yc);}
+    ctx.stroke();
+    // marcas a,b
+    ctx.setLineDash([4,4]);ctx.strokeStyle=muted;ctx.lineWidth=1;
+    [a,b].forEach(function(v){ctx.beginPath();ctx.moveTo(X(v),T);ctx.lineTo(X(v),H-B);ctx.stroke();});
+    ctx.setLineDash([]);
+    ctx.fillStyle=ink;ctx.font="bold 12px system-ui,sans-serif";ctx.textAlign="center";
+    ctx.fillText("a",X(a),T+12);ctx.fillText("b",X(b),T+12);
+    // estadísticas
+    var ex=b>a?simpson(f,a,b):0;
+    document.getElementById("sDx").textContent=fmt(dx);
+    document.getElementById("sAp").textContent=fmt(sum);
+    document.getElementById("sEx").textContent=fmt(ex);
+    document.getElementById("sEr").textContent=fmt(Math.abs(sum-ex));
+  }
+  function niceStep(r){var p=Math.pow(10,Math.floor(Math.log10(r))),m=r/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p;}
+  function round(v){return Math.abs(v)<1e-9?"0":(+v.toFixed(2)).toString();}
+  function hexA(c,a){
+    if(c.charAt(0)==="#"){var h=c.slice(1);if(h.length===3)h=h.split("").map(function(x){return x+x}).join("");
+      return "rgba("+parseInt(h.slice(0,2),16)+","+parseInt(h.slice(2,4),16)+","+parseInt(h.slice(4,6),16)+","+a+")";}
+    return c;
+  }
+
+  fSel.onchange=function(){setFunc(fSel.value);};
+  [nR,aR,bR].forEach(function(r){r.oninput=draw;});
+  exactChk.onchange=draw;
+  document.querySelectorAll("#mSeg button").forEach(function(btn){
+    btn.onclick=function(){
+      document.querySelectorAll("#mSeg button").forEach(function(o){o.classList.remove("on");});
+      btn.classList.add("on");method=btn.dataset.m;draw();
+    };
+  });
+  var timer=null,playBtn=document.getElementById("playBtn");
+  playBtn.onclick=function(){
+    if(timer){clearInterval(timer);timer=null;playBtn.textContent="▶ Animar";return;}
+    nR.value=1;draw();playBtn.textContent="❚❚ Pausa";
+    timer=setInterval(function(){
+      var v=+nR.value;v=v<10?v+1:v<40?v+3:v+10;
+      if(v>200){v=200;clearInterval(timer);timer=null;playBtn.textContent="▶ Animar";}
+      nR.value=v;draw();
+    },420);
+  };
+  window.addEventListener("resize",resize);
+  setFunc("x2");resize();
+
+  /* ---------- quiz ---------- */
+  var Q=[
+    {q:"¿Qué representa la integral definida de una función positiva entre a y b?",o:["La pendiente de la curva","El área bajo la curva entre a y b","El valor máximo de la función","La derivada de la función"],a:1,e:"La integral mide lo que se acumula: geométricamente, el área entre la curva y el eje x. La pendiente es tema de derivadas."},
+    {q:"Si divides el intervalo [2, 6] en n = 8 rectángulos, ¿cuánto mide Δx?",o:["0.25","0.5","2","8"],a:1,e:"Δx = (b − a)/n = (6 − 2)/8 = 4/8 = 0.5."},
+    {q:"¿Qué pasa con la aproximación cuando aumentamos la cantidad de rectángulos?",o:["Empeora","No cambia","Se acerca cada vez más al área real","Siempre da cero"],a:2,e:"Rectángulos más delgados dejan menos espacio sobrante o faltante, así que el error se reduce. En el límite (n → ∞) el error es cero."},
+    {q:"¿Cuál es ∫ x⁵ dx?",o:["5x⁴ + C","x⁶ + C","x⁶/6 + C","x⁵/5 + C"],a:2,e:"Regla de la potencia: sumamos 1 al exponente (5 + 1 = 6) y dividimos entre 6. 5x⁴ sería la derivada, no la integral."},
+    {q:"¿Cuánto vale ∫ de 0 a 3 de 2x dx?",o:["6","9","3","18"],a:1,e:"Antiderivada: x². Evaluamos: 3² − 0² = 9 − 0 = 9. (Geométricamente es un triángulo de base 3 y altura 6: 3·6/2 = 9.)"},
+    {q:"¿Por qué en la integral indefinida se escribe + C?",o:["Porque es obligatorio por costumbre","Porque la derivada de cualquier constante es 0, así que hay infinitas antiderivadas","Porque C es el área","Porque C siempre vale 1"],a:1,e:"x² + 3, x² − 8 y x² tienen todas la misma derivada (2x). La C representa esa constante que no podemos saber."},
+    {q:"Si ∫ de 1 a 4 de f(x) dx = 7, ¿cuánto vale ∫ de 4 a 1 de f(x) dx?",o:["7","−7","0","1/7"],a:1,e:"Invertir los límites cambia el signo de la integral."},
+    {q:"Para resolver ∫ (x² − 4)/(x − 2) dx, ¿cuál es el primer paso más útil?",o:["Integrar arriba y abajo por separado","Factorizar x² − 4 como (x − 2)(x + 2) y simplificar","Usar ln|x|","Derivar la fracción"],a:1,e:"Al factorizar la diferencia de cuadrados y cancelar (x − 2) queda ∫ (x + 2) dx = x²/2 + 2x + C. ¡No se puede integrar arriba y abajo por separado!"}
+  ];
+  var qBox=document.getElementById("quiz"),right=0,answered=0;
+  Q.forEach(function(it,idx){
+    var d=document.createElement("div");d.className="q";
+    d.innerHTML='<div class="qt">'+(idx+1)+". "+it.q+'</div><div class="opts"></div><div class="fb"></div>';
+    var opts=d.querySelector(".opts"),fb=d.querySelector(".fb"),done=false;
+    it.o.forEach(function(txt,j){
+      var b=document.createElement("button");b.className="opt";b.textContent=txt;
+      b.onclick=function(){
+        if(done)return;done=true;answered++;
+        if(j===it.a){b.classList.add("right");right++;fb.innerHTML="<b>¡Correcto!</b> "+it.e;}
+        else{b.classList.add("wrong");opts.children[it.a].classList.add("right");fb.innerHTML="<b>Casi.</b> "+it.e;}
+        fb.classList.add("show");
+        document.getElementById("score").textContent="· "+right+" / "+answered;
+      };
+      opts.appendChild(b);
+    });
+    qBox.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>

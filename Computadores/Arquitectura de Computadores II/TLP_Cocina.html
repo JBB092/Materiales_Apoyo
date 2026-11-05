@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cocina Paralela — Aprende Thread-Level Parallelism</title>
+<style>
+  :root{
+    --bg:#1b1d1f; --panel:#232629; --panel2:#2b2f33; --steel:#3a3f44;
+    --ink:#f2ede4; --ink-dim:#b9b3a6;
+    --copper:#c97a3d; --copper-lt:#e3a857;
+    --active:#4caf6d; --stall:#e0a93a; --block:#d9534f; --idle:#565b60;
+    --radius:10px;
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);height:100%;}
+  body{-webkit-tap-highlight-color:transparent;}
+  h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.01em;}
+  .app{display:flex;flex-direction:column;min-height:100vh;}
+
+  header{
+    background:linear-gradient(180deg,#151617,var(--bg));
+    border-bottom:2px solid var(--copper);
+    padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  header .brand{display:flex;align-items:baseline;gap:10px;}
+  header h1{font-size:1.25rem;color:var(--copper-lt);}
+  header .sub{font-size:.78rem;color:var(--ink-dim);}
+  .stats-rail{display:flex;gap:10px;flex-wrap:wrap;}
+  .ticket{background:var(--panel2);border-left:3px solid var(--copper);border-radius:4px;padding:6px 12px;min-width:90px;}
+  .ticket .val{font-size:1.15rem;font-weight:700;color:var(--copper-lt);line-height:1.1;}
+  .ticket .lbl{font-size:.65rem;color:var(--ink-dim);}
+
+  .layout{display:flex;flex:1;gap:14px;padding:14px;align-items:flex-start;}
+  @media (max-width:980px){ .layout{flex-direction:column;} }
+
+  .panel{background:var(--panel);border-radius:var(--radius);padding:14px;}
+
+  /* controls */
+  .controls{width:260px;flex-shrink:0;position:sticky;top:14px;}
+  @media (max-width:980px){ .controls{width:100%;position:static;} }
+  .controls h2{font-size:.85rem;color:var(--copper-lt);margin-bottom:10px;}
+  .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+  .mode-btn{
+    background:var(--panel2);border:1px solid var(--steel);color:var(--ink);
+    border-radius:8px;padding:9px 4px;font-size:.72rem;font-weight:600;cursor:pointer;
+    transition:background .15s,border-color .15s,transform .1s;
+  }
+  .mode-btn:active{transform:scale(.97);}
+  .mode-btn.on{background:var(--copper);border-color:var(--copper-lt);color:#1a1206;}
+  .field{margin-bottom:14px;}
+  .field label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--ink-dim);margin-bottom:4px;}
+  .field label b{color:var(--ink);}
+  input[type=range]{width:100%;accent-color:var(--copper);}
+  select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--steel);border-radius:6px;padding:7px;font-size:.8rem;}
+  .cmp-extra{display:none;border-top:1px dashed var(--steel);padding-top:12px;margin-top:2px;}
+  .cmp-extra.show{display:block;}
+  .btnrow{display:flex;gap:8px;}
+  .btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--steel);background:var(--panel2);color:var(--ink);font-weight:600;font-size:.78rem;cursor:pointer;}
+  .btn.primary{background:var(--active);border-color:var(--active);color:#0d1f12;}
+  .btn:active{transform:scale(.97);}
+
+  /* kitchens */
+  .kitchens{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;}
+  .kitchen{background:var(--panel);border-radius:var(--radius);overflow:hidden;border-top:4px solid var(--copper);}
+  .kitchen-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel2);}
+  .kitchen-head h3{font-size:.85rem;}
+  .kitchen-head .rate{font-size:.72rem;color:var(--copper-lt);font-weight:700;}
+  .kitchen-body{padding:12px 14px;display:flex;flex-direction:column;gap:12px;}
+
+  .row-label{font-size:.65rem;color:var(--ink-dim);margin-bottom:5px;}
+  .stations{display:flex;gap:8px;flex-wrap:wrap;}
+  .station{width:34px;height:34px;border-radius:50%;background:var(--idle);border:2px solid var(--steel);
+    display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .2s,box-shadow .2s;}
+  .station.on{background:var(--active);box-shadow:0 0 10px 2px rgba(76,175,109,.6);border-color:var(--active);}
+
+  .chefs{display:flex;gap:8px;flex-wrap:wrap;}
+  .chef{width:44px;text-align:center;font-size:.6rem;color:var(--ink-dim);}
+  .chef .av{width:36px;height:36px;border-radius:50%;background:var(--panel2);border:3px solid var(--idle);
+    display:flex;align-items:center;justify-content:center;font-size:17px;margin:0 auto 2px;transition:border-color .2s,box-shadow .2s;}
+  .chef.active .av{border-color:var(--active);box-shadow:0 0 8px rgba(76,175,109,.55);}
+  .chef.stalled .av{border-color:var(--stall);box-shadow:0 0 8px rgba(224,169,58,.5);}
+  .chef.blocked .av{border-color:var(--block);box-shadow:0 0 8px rgba(217,83,79,.5);}
+
+  .queue{display:flex;gap:10px;flex-wrap:wrap;}
+  .dish{background:var(--panel2);border-radius:8px;padding:6px 10px;min-width:96px;}
+  .dish .name{font-size:.72rem;margin-bottom:4px;}
+  .bar{height:6px;border-radius:4px;background:var(--steel);overflow:hidden;}
+  .bar i{display:block;height:100%;background:var(--copper-lt);transition:width .25s;}
+
+  /* theory panel */
+  .theory{width:300px;flex-shrink:0;}
+  @media (max-width:980px){ .theory{width:100%;} }
+  .theory h2{font-size:.85rem;color:var(--copper-lt);margin-bottom:8px;}
+  .theory p{font-size:.82rem;line-height:1.5;color:var(--ink-dim);margin:0 0 10px;}
+  .theory .insight{background:var(--panel2);border-left:3px solid var(--stall);border-radius:4px;padding:8px 10px;font-size:.78rem;margin-top:10px;}
+  .theory .insight.ok{border-color:var(--active);}
+  .theory .insight.bad{border-color:var(--block);}
+
+  .spark{display:flex;align-items:flex-end;gap:2px;height:40px;margin-top:8px;}
+  .spark div{flex:1;background:var(--copper);border-radius:2px 2px 0 0;min-height:2px;transition:height .2s;}
+
+  footer{padding:10px 20px;font-size:.68rem;color:var(--ink-dim);text-align:center;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <h1>🍳 Cocina Paralela</h1>
+      <span class="sub">Aprende Thread-Level Parallelism</span>
+    </div>
+    <div class="stats-rail">
+      <div class="ticket"><div class="val" id="statServed">0</div><div class="lbl">platos servidos</div></div>
+      <div class="ticket"><div class="val" id="statRate">0</div><div class="lbl">platos / min</div></div>
+      <div class="ticket"><div class="val" id="statChefs">0</div><div class="lbl">chefs totales</div></div>
+      <div class="ticket"><div class="val" id="statEff">100%</div><div class="lbl">eficiencia</div></div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <div class="panel controls">
+      <h2>Configuración del turno</h2>
+      <div class="mode-grid" id="modeGrid">
+        <button class="mode-btn" data-mode="FGMT">FGMT<br><span style="font-weight:400">fino</span></button>
+        <button class="mode-btn" data-mode="CGMT">CGMT<br><span style="font-weight:400">grueso</span></button>
+        <button class="mode-btn" data-mode="SMT">SMT<br><span style="font-weight:400">simultáneo</span></button>
+        <button class="mode-btn" data-mode="CMP">CMP<br><span style="font-weight:400">multi-cocina</span></button>
+      </div>
+
+      <div class="field">
+        <label>Chefs por cocina <b id="chefsVal">2</b></label>
+        <input type="range" id="chefsSlider" min="1" max="8" value="2">
+      </div>
+
+      <div class="cmp-extra" id="cmpExtra">
+        <div class="field">
+          <label>Modo interno de cada cocina</label>
+          <select id="internalMode">
+            <option value="FGMT">FGMT</option>
+            <option value="CGMT">CGMT</option>
+            <option value="SMT" selected>SMT</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Número de cocinas <b id="kitchensVal">2</b></label>
+          <input type="range" id="kitchensSlider" min="1" max="4" value="2">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Velocidad de simulación</label>
+        <input type="range" id="speedSlider" min="150" max="1000" value="500">
+      </div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="playBtn">Pausar</button>
+        <button class="btn" id="resetBtn">Reiniciar</button>
+      </div>
+    </div>
+
+    <div class="kitchens" id="kitchensArea"></div>
+
+    <div class="panel theory">
+      <h2 id="theoryTitle">FGMT — Multi-hilo de grano fino</h2>
+      <p id="theoryText"></p>
+      <div class="insight" id="insightBox">Ajusta los controles y observa la cocina.</div>
+      <div class="row-label" style="margin-top:14px">Historial de rendimiento (platos/min)</div>
+      <div class="spark" id="spark"></div>
+    </div>
+
+  </div>
+
+  <footer>Estación libre significa un slot de trabajo disponible ese ciclo · Anillo verde = trabajando · ámbar = esperando (latencia) · rojo = estorbado por saturación</footer>
+</div>
+
+<script>
+(function(){
+  const STATIONS = 4;
+  const STALL_CHANCE = 0.22;
+  const STALL_DURATION = 3;
+  const DISH_NAMES = ["Pizza","Sopa","Ensalada","Pasta","Sushi","Tacos","Risotto","Curry"];
+  const DISH_ICON = {Pizza:"🍕",Sopa:"🍜",Ensalada:"🥗",Pasta:"🍝",Sushi:"🍣",Tacos:"🌮",Risotto:"🍚",Curry:"🍛"};
+
+  const THEORY = {
+    FGMT:{title:"FGMT — Multi-hilo de grano fino",
+      text:"Cada ciclo de reloj, la cocina cambia estrictamente de chef, rotando entre todos los que están listos. Ningún chef trabaja dos ciclos seguidos. Esto oculta muy bien las esperas largas (como hervir agua), porque siempre hay otro chef listo para tomar el siguiente ciclo — pero cada plato individual avanza más lento, ya que su chef solo trabaja uno de cada N ciclos."},
+    CGMT:{title:"CGMT — Multi-hilo de grano grueso",
+      text:"Un chef se queda trabajando en su plato de forma continua, ciclo tras ciclo, hasta que se topa con una tarea de espera larga (memoria/latencia, como esperar que hierva el agua). Solo entonces cede el puesto a otro chef. Es más simple que FGMT, pero si la espera es corta el cambio de turno puede desperdiciar tiempo."},
+    SMT:{title:"SMT — Multi-hilo simultáneo",
+      text:"La cocina tiene varias estaciones (cortar, hervir, saltear, emplatar) y en el mismo ciclo distintos chefs pueden ocupar estaciones distintas a la vez. Si un chef está esperando el agua, otro chef aprovecha esa estación libre. Es el modo más eficiente por ciclo — hasta que ya no caben más chefs en las estaciones disponibles."},
+    CMP:{title:"CMP — Multiprocesamiento en chip",
+      text:"En lugar de exprimir una sola cocina, se duplica el hardware: se activan varias cocinas independientes, cada una con su propio flujo de chefs (FGMT, CGMT o SMT). El paralelismo ya no depende de turnos dentro de una cocina, sino de tener varias cocinas trabajando al mismo tiempo."}
+  };
+
+  // ---- state ----
+  let mode = "FGMT", internalMode = "SMT";
+  let chefsPerKitchen = 2, numKitchens = 1;
+  let tickMs = 500, timer = null, running = true;
+  let kitchens = [];
+  let servedTimestamps = [];
+  let sparkHistory = [];
+  let lastTickEffFactor = 1, lastTickHadBubble = false;
+
+  const el = id => document.getElementById(id);
+
+  function newDish(){
+    const n = DISH_NAMES[Math.floor(Math.random()*DISH_NAMES.length)];
+    return {name:n, icon:DISH_ICON[n], total: 4+Math.floor(Math.random()*4), done:0};
+  }
+
+  function makeChef(id){ return {id, dish:null, stalledTicksLeft:0, status:"idle"}; }
+
+  function buildKitchens(){
+    const n = mode==="CMP" ? numKitchens : 1;
+    kitchens = [];
+    for(let i=0;i<n;i++){
+      const chefs = [];
+      for(let c=0;c<chefsPerKitchen;c++) chefs.push(makeChef(c));
+      kitchens.push({
+        id:i, chefs, rotationPointer:0, currentChefIdx:-1,
+        served:0, queue:[newDish(),newDish()]
+      });
+    }
+    servedTimestamps = [];
+    sparkHistory = [];
+    render();
+    updateStats();
+  }
+
+  function kitchenMode(){ return mode==="CMP" ? internalMode : mode; }
+
+  function efficiencyFactor(n){
+    if(n<=STATIONS) return 1;
+    return Math.max(0.15, 1-(n-STATIONS)*0.12);
+  }
+
+  function assignDishIfNeeded(k, chef){
+    if(!chef.dish){
+      if(k.queue.length===0) k.queue.push(newDish());
+      chef.dish = k.queue.shift();
+    }
+  }
+
+  function doWork(k, chef){
+    assignDishIfNeeded(k, chef);
+    chef.dish.done++;
+    if(chef.dish.done >= chef.dish.total){
+      k.served++;
+      servedTimestamps.push(Date.now());
+      chef.dish = null;
+      k.queue.push(newDish());
+    }
+    if(Math.random() < STALL_CHANCE){
+      chef.stalledTicksLeft = STALL_DURATION;
+    }
+  }
+
+  function tickKitchen(k){
+    const km = kitchenMode();
+    // decrement stalls, reset status
+    k.chefs.forEach(c=>{
+      if(c.stalledTicksLeft>0){ c.stalledTicksLeft--; c.status = c.stalledTicksLeft>0 ? "stalled":"ready"; }
+      else c.status = "ready";
+    });
+    const readyIdx = k.chefs.map((c,i)=>c).map((c,i)=>i).filter(i=>k.chefs[i].status==="ready");
+    const eff = efficiencyFactor(chefsPerKitchen);
+
+    let activeIdx = [];
+
+    if(km==="FGMT"){
+      let steps=0, ptr=k.rotationPointer;
+      while(steps < k.chefs.length){
+        if(k.chefs[ptr].status==="ready"){ activeIdx=[ptr]; k.rotationPointer=(ptr+1)%k.chefs.length; break; }
+        ptr=(ptr+1)%k.chefs.length; steps++;
+      }
+    } else if(km==="CGMT"){
+      if(k.currentChefIdx===-1 || k.chefs[k.currentChefIdx].status!=="ready"){
+        let steps=0, ptr=k.rotationPointer, found=-1;
+        while(steps < k.chefs.length){
+          if(k.chefs[ptr].status==="ready"){ found=ptr; break; }
+          ptr=(ptr+1)%k.chefs.length; steps++;
+        }
+        k.currentChefIdx = found;
+        k.rotationPointer = found===-1 ? k.rotationPointer : (found+1)%k.chefs.length;
+      }
+      if(k.currentChefIdx!==-1) activeIdx=[k.currentChefIdx];
+    } else { // SMT
+      let picks=[], ptr=k.rotationPointer, steps=0;
+      while(picks.length < Math.min(STATIONS, readyIdx.length) && steps < k.chefs.length*2){
+        if(k.chefs[ptr].status==="ready" && !picks.includes(ptr)) picks.push(ptr);
+        ptr=(ptr+1)%k.chefs.length; steps++;
+      }
+      k.rotationPointer = ptr;
+      activeIdx = picks;
+    }
+
+    let anyBlocked=false;
+    activeIdx.forEach(i=>{
+      const chef = k.chefs[i];
+      if(Math.random() < eff){
+        chef.status="active";
+        doWork(k, chef);
+      } else {
+        chef.status="blocked"; anyBlocked=true;
+      }
+    });
+    lastTickEffFactor = eff;
+    lastTickHadBubble = activeIdx.length===0;
+    return anyBlocked;
+  }
+
+  function tick(){
+    kitchens.forEach(k=>tickKitchen(k));
+    render();
+    updateStats();
+  }
+
+  function updateStats(){
+    const totalServed = kitchens.reduce((s,k)=>s+k.served,0);
+    const now = Date.now();
+    servedTimestamps = servedTimestamps.filter(t=>now-t<8000);
+    const rate = Math.round((servedTimestamps.length/8)*60);
+    const totalChefs = kitchens.reduce((s,k)=>s+k.chefs.length,0);
+    el("statServed").textContent = totalServed;
+    el("statRate").textContent = rate;
+    el("statChefs").textContent = totalChefs;
+    el("statEff").textContent = Math.round(lastTickEffFactor*100)+"%";
+
+    sparkHistory.push(rate);
+    if(sparkHistory.length>24) sparkHistory.shift();
+    const max = Math.max(1,...sparkHistory);
+    el("spark").innerHTML = sparkHistory.map(v=>`<div style="height:${Math.max(4,(v/max)*100)}%"></div>`).join("");
+
+    updateInsight();
+  }
+
+  function updateInsight(){
+    const box = el("insightBox");
+    box.classList.remove("ok","bad");
+    const n = chefsPerKitchen;
+    if(n > STATIONS){
+      box.classList.add("bad");
+      box.textContent = `⚠️ Saturación: con ${n} chefs en una cocina de ${STATIONS} estaciones, se estorban entre sí. Eficiencia real: ${Math.round(efficiencyFactor(n)*100)}%. Prueba a bajar el número de chefs.`;
+    } else if(lastTickHadBubble){
+      box.classList.add("bad");
+      box.textContent = "🫧 Burbuja de latencia: todos los chefs disponibles están esperando algo (agua hirviendo). Ese ciclo se pierde. Más chefs ayudarían a llenar el hueco.";
+    } else {
+      box.classList.add("ok");
+      box.textContent = `✅ Punto saludable: ${n} chef(s) por cocina, dentro de las ${STATIONS} estaciones disponibles. Sin cuellos de botella por saturación.`;
+    }
+  }
+
+  function chefEmoji(status){
+    if(status==="active") return "👨‍🍳";
+    if(status==="stalled") return "⏳";
+    if(status==="blocked") return "🚧";
+    return "🧑‍🍳";
+  }
+
+  function render(){
+    el("kitchensArea").innerHTML = kitchens.map(k=>{
+      const activeCount = k.chefs.filter(c=>c.status==="active").length;
+      const stationsHtml = Array.from({length:STATIONS}).map((_,i)=>
+        `<div class="station ${i<activeCount?"on":""}">${i<activeCount?"🔥":"⚪"}</div>`
+      ).join("");
+      const chefsHtml = k.chefs.map(c=>
+        `<div class="chef ${c.status}"><div class="av">${chefEmoji(c.status)}</div>#${c.id+1}</div>`
+      ).join("");
+      const queueHtml = k.chefs.filter(c=>c.dish).map(c=>{
+        const pct = Math.round((c.dish.done/c.dish.total)*100);
+        return `<div class="dish"><div class="name">${c.dish.icon} ${c.dish.name}</div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+      }).join("") || `<div class="dish"><div class="name">Sin platos en preparación</div><div class="bar"><i style="width:0%"></i></div></div>`;
+
+      return `<div class="kitchen">
+        <div class="kitchen-head"><h3>Cocina ${k.id+1} ${mode==="CMP" ? "· "+internalMode : ""}</h3><span class="rate">${k.served} servidos</span></div>
+        <div class="kitchen-body">
+          <div><div class="row-label">Estaciones activas este ciclo</div><div class="stations">${stationsHtml}</div></div>
+          <div><div class="row-label">Chefs (hilos)</div><div class="chefs">${chefsHtml}</div></div>
+          <div><div class="row-label">Platos en preparación</div><div class="queue">${queueHtml}</div></div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function updateTheoryPanel(){
+    const t = THEORY[mode];
+    el("theoryTitle").textContent = t.title;
+    el("theoryText").textContent = t.text;
+  }
+
+  function setMode(m){
+    mode = m;
+    document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("on", b.dataset.mode===m));
+    el("cmpExtra").classList.toggle("show", m==="CMP");
+    updateTheoryPanel();
+    buildKitchens();
+  }
+
+  function restartTimer(){
+    if(timer) clearInterval(timer);
+    if(running) timer = setInterval(tick, tickMs);
+  }
+
+  // ---- wire up controls ----
+  document.querySelectorAll(".mode-btn").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+
+  el("chefsSlider").addEventListener("input", e=>{
+    chefsPerKitchen = parseInt(e.target.value);
+    el("chefsVal").textContent = chefsPerKitchen;
+    buildKitchens();
+  });
+  el("kitchensSlider").addEventListener("input", e=>{
+    numKitchens = parseInt(e.target.value);
+    el("kitchensVal").textContent = numKitchens;
+    buildKitchens();
+  });
+  el("internalMode").addEventListener("change", e=>{
+    internalMode = e.target.value;
+    buildKitchens();
+  });
+  el("speedSlider").addEventListener("input", e=>{
+    tickMs = 1150 - parseInt(e.target.value); // invert: right = faster
+    restartTimer();
+  });
+  el("playBtn").addEventListener("click", ()=>{
+    running = !running;
+    el("playBtn").textContent = running ? "Pausar" : "Reanudar";
+    restartTimer();
+  });
+  el("resetBtn").addEventListener("click", buildKitchens);
+
+  // ---- init ----
+  setMode("FGMT");
+  restartTimer();
+})();
+</script>
+</body>
+</html>
